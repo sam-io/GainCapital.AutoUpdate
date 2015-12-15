@@ -1,6 +1,6 @@
 *.suo
 
-/_bin/
+/bin/
 [Bb]in/
 [Oo]bj/
 
