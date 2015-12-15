@@ -1,0 +1,12 @@
+*.suo
+
+/_bin/
+[Bb]in/
+[Oo]bj/
+
+*.*.user
+_ReSharper*/
+
+/src/packages/
+
+/tools/
