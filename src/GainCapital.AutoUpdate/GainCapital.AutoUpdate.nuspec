@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>GainCapital.AutoUpdate</id>
+    <title>GainCapital.AutoUpdate</title>
+    <version>$version$</version>
+    <authors>Gain Capital</authors>
+    <description>GainCapital.AutoUpdate</description>
+    <language>en-GB</language>
+    <licenseUrl>https://github.com/cityindex/GainCapital.AutoUpdate/LICENSE</licenseUrl>
+    <dependencies>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\bin\Updater.exe" target="lib\net45\"/>
+  </files>
+</package>

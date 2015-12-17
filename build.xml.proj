@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\tools\MSBuildTasks.1.4.0.78\tools</MSBuildCommunityTasksPath>
+		<NuGetExe>$(MSBuildProjectDirectory)\src\.nuget\nuget.exe</NuGetExe>
+	</PropertyGroup>
+	<Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+	<Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+
+	<PropertyGroup>
+		<BUILD_VERSION>0.0.0</BUILD_VERSION>
+		<VERSION_SUFFIX></VERSION_SUFFIX>
+		<FullVersion>$(BUILD_VERSION.Replace('-', '.'))</FullVersion>
+		<SemVersion>$(FullVersion)$(VERSION_SUFFIX)</SemVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<AssemblyVersionFiles Include="$(MSBuildProjectDirectory)\**\AssemblyInfo.cs"/>
+	</ItemGroup>
+
+	<Target Name="AssemblyVersionUpdate" Inputs="@(AssemblyVersionFiles)" Outputs="UpdatedAssemblyVersionFiles">
+		<FileUpdate
+			Files="@(AssemblyVersionFiles)"
+			Regex="AssemblyVersion\(&quot;.*&quot;\)"
+			ReplacementText="AssemblyVersion(&quot;$(FullVersion)&quot;)" />
+		<FileUpdate
+			Files="@(AssemblyVersionFiles)"
+			Regex="AssemblyConfiguration\(&quot;.*&quot;\)"
+			ReplacementText="AssemblyConfiguration(&quot;$(SemVersion)&quot;)" />
+		<FileUpdate
+			Files="@(AssemblyVersionFiles)"
+			Regex="AssemblyInformationalVersion\(&quot;.*&quot;\)"
+			ReplacementText="AssemblyInformationalVersion(&quot;$(SemVersion)&quot;)" />
+	</Target>
+
+	<PropertyGroup>
+		<Configuration>Release</Configuration>
+		<Platform>Any CPU</Platform>
+		<SolutionDir>src\</SolutionDir>
+	</PropertyGroup>
+
+	<Target Name="Build" DependsOnTargets="AssemblyVersionUpdate">
+		<MSBuild Projects="src/GainCapital.AutoUpdate.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+	</Target>
+
+	<Target Name="Package">
+		<Message Text="Creating a NuGet package" />
+
+		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\GainCapital.AutoUpdate\GainCapital.AutoUpdate.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)"'
+			ContinueOnError='false'/>
+	</Target>
+</Project>
