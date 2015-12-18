@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="InstallDependencies" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<SolutionDir>src\</SolutionDir>
+	</PropertyGroup>
+	<Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+	
+	<Target Name="InstallDependencies">
+		<Message Text="Installing MSBuildCommunityTasks" />
+		<Exec Command="$(NuGetCommand) install MSBuildTasks -Version 1.4.0.128 -OutputDirectory tools"/>
+	</Target>
+</Project>
