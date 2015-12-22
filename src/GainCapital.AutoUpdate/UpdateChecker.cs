@@ -21,18 +21,19 @@ namespace GainCapital.AutoUpdate
 {
 	public class UpdateChecker
 	{
-		public UpdateChecker(UpdatingInfo info)
+		public UpdateChecker(HostControl host, UpdatingInfo info)
 		{
+			_host = host;
 			_info = info;
 		}
 
-		public void CheckForUpdates(HostControl hostControl)
+		public void CheckForUpdates()
 		{
 			while (true)
 			{
 				try
 				{
-					CheckUpdatesOnce(hostControl);
+					CheckUpdatesOnce();
 				}
 				catch (ThreadInterruptedException)
 				{
@@ -61,7 +62,7 @@ namespace GainCapital.AutoUpdate
 			}
 		}
 
-		private void CheckUpdatesOnce(HostControl hostControl)
+		private void CheckUpdatesOnce()
 		{
 			var packageId = _info.NugetAppName;
 			var curAssemblyPath = Assembly.GetExecutingAssembly().Location;
@@ -121,7 +122,7 @@ namespace GainCapital.AutoUpdate
 
 			var updaterPath = Path.Combine(updateDeploymentPath, "Updater.exe");
 
-			var appMode = GetAppMode(hostControl);
+			var appMode = GetAppMode(_host);
 			var startingName = (appMode == AppMode.Service) ? _info.ServiceName : _info.ExeName;
 			var args = string.Format("{0} {1} \"{2}\" \"{3}\" \"{4}\"", Process.GetCurrentProcess().Id, appMode,
 				EscapeCommandLineArg(startingName), EscapeCommandLineArg(updateDeploymentPath),
@@ -133,7 +134,7 @@ namespace GainCapital.AutoUpdate
 				FileName = updaterPath,
 				Arguments = args,
 			});
-			hostControl.Stop();
+			_host.Stop();
 		}
 
 		private IPackage GetLastPackage(IPackageRepository repo, string packageId)
@@ -214,5 +215,7 @@ namespace GainCapital.AutoUpdate
 		private static readonly ILog Log = LogManager.GetLogger(typeof(UpdateChecker));
 
 		private static readonly string[] UpdateFileTypes = { "*.exe", "*.dll", "*.pdb", "*.xml" };
+
+		HostControl _host;
 	}
 }
