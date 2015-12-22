@@ -25,9 +25,23 @@ namespace GainCapital.AutoUpdate
 		{
 			_host = host;
 			_info = info;
+
+			_thread = new Thread(CheckForUpdates);
 		}
 
-		public void CheckForUpdates()
+		public void Start()
+		{
+			_thread.Start();
+		}
+
+		public void Stop()
+		{
+			_terminationEvent.Set();
+			_thread.Interrupt();
+			_thread.Join(TimeSpan.FromSeconds(10));
+		}
+
+		void CheckForUpdates()
 		{
 			while (true)
 			{
@@ -216,6 +230,7 @@ namespace GainCapital.AutoUpdate
 
 		private static readonly string[] UpdateFileTypes = { "*.exe", "*.dll", "*.pdb", "*.xml" };
 
-		HostControl _host;
+		private readonly HostControl _host;
+		private readonly Thread _thread;
 	}
 }
