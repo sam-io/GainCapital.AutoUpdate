@@ -44,7 +44,7 @@
 		<MSBuild Projects="src/GainCapital.AutoUpdate.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
 	</Target>
 
-	<Target Name="Package">
+	<Target Name="Package" DependsOnTargets="Build">
 		<Message Text="Creating a NuGet package" />
 
 		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\GainCapital.AutoUpdate\GainCapital.AutoUpdate.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)"'
