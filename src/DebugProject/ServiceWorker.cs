@@ -12,12 +12,16 @@ namespace DebugProject
 	{
 		public bool Start(HostControl hostControl)
 		{
+			_host = hostControl;
 			return true;
 		}
 
 		public bool Stop(HostControl hostControl)
 		{
+			_host = null;
 			return true;
 		}
+
+		HostControl _host;
 	}
 }
