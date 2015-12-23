@@ -28,7 +28,11 @@ namespace GainCapital.AutoUpdate
 
 			info.Prepare();
 
-			_thread = new Thread(CheckForUpdates);
+			_thread = new Thread(CheckForUpdates)
+			{
+				Name = "AutoUpdateThread",
+				IsBackground = true,
+			};
 		}
 
 		public void Start()
