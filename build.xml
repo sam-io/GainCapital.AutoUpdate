@@ -3,6 +3,7 @@
 
 	<PropertyGroup>
 		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\tools\MSBuildTasks.1.4.0.128\tools</MSBuildCommunityTasksPath>
+		<SourcePath>$(MSBuildProjectDirectory)\src\</SourcePath>
 		<NuGetExe>$(MSBuildProjectDirectory)\src\.nuget\nuget.exe</NuGetExe>
 	</PropertyGroup>
 	<Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
@@ -41,6 +42,7 @@
 	</PropertyGroup>
 
 	<Target Name="Build" DependsOnTargets="AssemblyVersionUpdate">
+		<Exec Command='"$(NuGetExe)" restore' WorkingDirectory="$(SourcePath)" ContinueOnError='false'/>
 		<MSBuild Projects="src/GainCapital.AutoUpdate.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
 	</Target>
 
