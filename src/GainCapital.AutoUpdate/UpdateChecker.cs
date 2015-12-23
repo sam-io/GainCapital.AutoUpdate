@@ -137,7 +137,7 @@ namespace GainCapital.AutoUpdate
 			Copy(_appPath, updateDeploymentPath, new[] { "*.log" });
 			_info.OnUpdate(packageBinPath, updateDeploymentPath);
 
-			var updaterPath = Path.Combine(updateDeploymentPath, "Updater.exe");
+			var updaterPath = Path.Combine(updateDeploymentPath, "GainCapital.Updater.exe");
 
 			var appMode = GetAppMode(_host);
 			var startingName = (appMode == AppMode.Service) ? _info.ServiceName : _info.ExeName;
