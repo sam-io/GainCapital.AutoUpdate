@@ -33,6 +33,17 @@ namespace GainCapital.AutoUpdate
 
 		public void Start()
 		{
+			var curAssemblyPath = Assembly.GetExecutingAssembly().Location;
+			_appPath = Path.GetDirectoryName(curAssemblyPath);
+
+			if (!JunctionPoint.Exists(_appPath))
+			{
+				LogError(string.Format("Invalid app folder structure: \"{0}\". Turned off auto updates.", _appPath));
+				return;
+			}
+
+			_curVersion = new Version(FileVersionInfo.GetVersionInfo(curAssemblyPath).FileVersion);
+
 			_thread.Start();
 		}
 
@@ -81,17 +92,9 @@ namespace GainCapital.AutoUpdate
 		private void CheckUpdatesOnce()
 		{
 			var packageId = _info.NugetAppName;
-			var curAssemblyPath = Assembly.GetExecutingAssembly().Location;
-			var appPath = Path.GetDirectoryName(curAssemblyPath);
 			var updateUrl = _info.NugetServerUrl;
 
-			if (!JunctionPoint.Exists(appPath))
-			{
-				LogError(string.Format("Invalid app folder structure: \"{0}\". Turned off auto updates.", appPath));
-				throw new ThreadInterruptedException();
-			}
-
-			var appParentPath = Path.GetDirectoryName(appPath);
+			var appParentPath = Path.GetDirectoryName(_appPath);
 			var updateDataPath = Path.Combine(appParentPath, "UpdateData");
 
 			if (Directory.Exists(updateDataPath))
@@ -111,9 +114,7 @@ namespace GainCapital.AutoUpdate
 			var lastPackage = GetLastPackage(repo, packageId);
 			var updateVersion = lastPackage.Version.Version;
 
-			var curVersion = new Version(FileVersionInfo.GetVersionInfo(curAssemblyPath).FileVersion);
-
-			if (updateVersion <= curVersion)
+			if (updateVersion <= _curVersion)
 				return;
 
 			var packageManager = new PackageManager(repo, updateDataPath);
@@ -123,7 +124,7 @@ namespace GainCapital.AutoUpdate
 			{
 				Category = Const.LogCategory.InternalDiagnostic,
 				Message = string.Format("Updating {0}", _info.NugetAppName),
-				OldVersion = curVersion.ToString(),
+				OldVersion = _curVersion.ToString(),
 				NewVersion = updateVersion.ToString(),
 			});
 
@@ -133,7 +134,7 @@ namespace GainCapital.AutoUpdate
 			var packageBinPath = Path.Combine(packagePath, "lib");
 
 			Copy(packageBinPath, updateDeploymentPath, UpdateFileTypes);
-			Copy(appPath, updateDeploymentPath, new[] { "*.log" });
+			Copy(_appPath, updateDeploymentPath, new[] { "*.log" });
 			_info.OnUpdate(packageBinPath, updateDeploymentPath);
 
 			var updaterPath = Path.Combine(updateDeploymentPath, "Updater.exe");
@@ -234,5 +235,8 @@ namespace GainCapital.AutoUpdate
 
 		private readonly HostControl _host;
 		private readonly Thread _thread;
+
+		private string _appPath;
+		private Version _curVersion;
 	}
 }
