@@ -14,7 +14,12 @@ namespace DebugProject
 		public bool Start(HostControl hostControl)
 		{
 			_host = hostControl;
-			_updater = new UpdateChecker(_host, new UpdatingInfo());
+			_updater = new UpdateChecker(_host,
+				new UpdatingInfo
+				{
+					NugetAppName = "DebugProject",
+					ServiceName = "DebugProject",
+				});
 			_updater.Start();
 
 			return true;

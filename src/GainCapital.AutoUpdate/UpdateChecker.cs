@@ -26,6 +26,8 @@ namespace GainCapital.AutoUpdate
 			_host = host;
 			_info = info;
 
+			info.Prepare();
+
 			_thread = new Thread(CheckForUpdates);
 		}
 
