@@ -7,8 +7,8 @@
     <ProjectGuid>{BC47D1A7-94A1-44A6-834C-DDF82D1DFF16}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DebugProject</RootNamespace>
-    <AssemblyName>DebugProject</AssemblyName>
+    <RootNamespace>GainCapital.AutoUpdate.DebugProject</RootNamespace>
+    <AssemblyName>GainCapital.AutoUpdate.DebugProject</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

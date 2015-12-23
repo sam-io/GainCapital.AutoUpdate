@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using log4net.Config;
 using Topshelf;
 
-namespace DebugProject
+namespace GainCapital.AutoUpdate.DebugProject
 {
 	class Program
 	{

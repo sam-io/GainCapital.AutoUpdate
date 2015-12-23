@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using GainCapital.AutoUpdate;
 using Topshelf;
 
-namespace DebugProject
+namespace GainCapital.AutoUpdate.DebugProject
 {
 	class ServiceWorker : ServiceControl
 	{
