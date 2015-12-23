@@ -16,6 +16,7 @@ using Topshelf;
 using Topshelf.Hosts;
 
 using GainCapital.AutoUpdate.Updater;
+using ThreadState = System.Threading.ThreadState;
 
 namespace GainCapital.AutoUpdate
 {
@@ -48,14 +49,23 @@ namespace GainCapital.AutoUpdate
 
 			_curVersion = new Version(FileVersionInfo.GetVersionInfo(curAssemblyPath).FileVersion);
 
-			_thread.Start();
+			lock (_thread)
+			{
+				_thread.Start();
+			}
 		}
 
 		public void Stop()
 		{
-			_terminationEvent.Set();
-			_thread.Interrupt();
-			_thread.Join(TimeSpan.FromSeconds(10));
+			lock (_thread)
+			{
+				_terminationEvent.Set();
+				Thread.Sleep(1);
+
+				_thread.Interrupt();
+				if (_thread.ThreadState == ThreadState.Running)
+					_thread.Join(TimeSpan.FromSeconds(10));
+			}
 		}
 
 		void CheckForUpdates()
