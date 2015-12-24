@@ -38,7 +38,7 @@ namespace GainCapital.AutoUpdate
 
 		public void Start()
 		{
-			var curAssemblyPath = Assembly.GetExecutingAssembly().Location;
+			var curAssemblyPath = Assembly.GetEntryAssembly().Location;
 			_appPath = Path.GetDirectoryName(curAssemblyPath);
 
 			if (!JunctionPoint.Exists(_appPath))
