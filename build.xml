@@ -47,9 +47,12 @@
 	</Target>
 
 	<Target Name="Package" DependsOnTargets="Build">
-		<Message Text="Creating a NuGet package" />
+		<Message Text="Creating NuGet packages" />
 
 		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\GainCapital.AutoUpdate\GainCapital.AutoUpdate.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)" -IncludeReferencedProjects'
+			ContinueOnError='false'/>
+
+		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\DebugProject\DebugProject.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)" -IncludeReferencedProjects'
 			ContinueOnError='false'/>
 	</Target>
 </Project>
