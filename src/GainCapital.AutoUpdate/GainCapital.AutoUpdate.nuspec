@@ -8,10 +8,5 @@
     <description>GainCapital.AutoUpdate</description>
     <language>en-GB</language>
     <licenseUrl>https://github.com/cityindex/GainCapital.AutoUpdate/LICENSE</licenseUrl>
-    <dependencies>
-    </dependencies>
   </metadata>
-  <files>
-    <file src="..\..\bin\Updater.exe" target="lib\net45\"/>
-  </files>
 </package>
