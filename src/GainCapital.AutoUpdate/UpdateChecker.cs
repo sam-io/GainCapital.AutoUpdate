@@ -234,7 +234,7 @@ namespace GainCapital.AutoUpdate
 		static string GetMainLogFolder()
 		{
 			var hierarchy = (Hierarchy)LogManager.GetRepository();
-			var appender = (FileAppender)hierarchy.GetAppenders().First(cur => cur.Name == "MainLogAppender");
+			var appender = (FileAppender)hierarchy.GetAppenders().FirstOrDefault(cur => cur.Name == "MainLogAppender");
 			if (appender == null)
 				return null;
 			var res = Path.GetDirectoryName(appender.File);
