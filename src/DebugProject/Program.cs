@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,8 +33,11 @@ namespace GainCapital.AutoUpdate.DebugProject
 
 				x.UseLog4Net();
 			});
+
+			if (Debugger.IsAttached)
+				Debugger.Break();
 		}
 
-		const string AppName = "DebugProject";
+		public const string AppName = "GainCapital.AutoUpdate.DebugProject";
 	}
 }

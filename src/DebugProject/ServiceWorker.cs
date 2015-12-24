@@ -16,8 +16,8 @@ namespace GainCapital.AutoUpdate.DebugProject
 			_updater = new UpdateChecker(_host,
 				new UpdatingInfo
 				{
-					NugetAppName = "DebugProject",
-					ServiceName = "DebugProject",
+					NugetAppName = Program.AppName,
+					ServiceName = Program.AppName,
 				});
 			_updater.Start();
 
