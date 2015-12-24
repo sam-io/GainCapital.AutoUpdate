@@ -20,7 +20,7 @@ namespace GainCapital.AutoUpdate
 			{
 				var tmp = Get("UpdateCheckingPeriod");
 				if (string.IsNullOrEmpty(tmp))
-					return TimeSpan.FromMinutes(1);
+					return TimeSpan.FromMinutes(5);
 				var res = TimeSpan.Parse(tmp);
 				return res;
 			}
