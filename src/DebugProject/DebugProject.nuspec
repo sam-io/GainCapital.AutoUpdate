@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>GainCapital.AutoUpdate.DebugProject</id>
+    <title>GainCapital.AutoUpdate.DebugProject</title>
+    <version>$version$</version>
+    <authors>Gain Capital</authors>
+    <description>GainCapital.AutoUpdate.DebugProject</description>
+    <language>en-GB</language>
+    <licenseUrl>https://github.com/cityindex/GainCapital.AutoUpdate/LICENSE</licenseUrl>
+  </metadata>
+</package>
