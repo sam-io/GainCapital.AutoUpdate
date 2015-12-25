@@ -124,7 +124,7 @@ namespace GainCapital.AutoUpdate
 			if (string.IsNullOrEmpty(UpdateUrl))
 				return;
 
-			var lastPackage = GetLastPackage(_repository, PackageId);
+			var lastPackage = GetLastPackage(PackageId);
 			var updateVersion = lastPackage.Version.Version;
 
 			if (updateVersion <= _curVersion)
@@ -153,6 +153,7 @@ namespace GainCapital.AutoUpdate
 
 			Copy(packageBinPath, updateDeploymentPath, UpdateFileTypes);
 			Copy(_appPath, updateDeploymentPath, new[] { "*.log" });
+
 			_info.OnUpdate(packagePath, updateDeploymentPath);
 
 			var updaterPath = Path.Combine(updateDeploymentPath, "GainCapital.Updater.exe");
@@ -172,9 +173,9 @@ namespace GainCapital.AutoUpdate
 			_host.Stop();
 		}
 
-		private IPackage GetLastPackage(IPackageRepository repo, string packageId)
+		private IPackage GetLastPackage(string packageId)
 		{
-			var packages = repo.FindPackagesById(packageId).ToList();
+			var packages = _repository.FindPackagesById(packageId).ToList();
 			packages.RemoveAll(val => !val.IsListed());
 			if (_info.IsPreProductionEnvironment != true)
 				packages.RemoveAll(val => !val.IsReleaseVersion());
