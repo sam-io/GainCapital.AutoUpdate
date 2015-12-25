@@ -138,6 +138,11 @@ namespace GainCapital.AutoUpdate
 				NewVersion = updateVersion.ToString(),
 			});
 
+			InstallUpdate(lastPackage);
+		}
+
+		private void InstallUpdate(IPackage lastPackage)
+		{
 			var packageManager = new PackageManager(_repository, _updateDataPath);
 			packageManager.InstallPackage(PackageId, lastPackage.Version, true, false);
 
