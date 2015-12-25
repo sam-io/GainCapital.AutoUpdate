@@ -105,18 +105,19 @@ namespace GainCapital.AutoUpdate
 
 		private void CheckUpdatesOnce()
 		{
+			Log.Info(new
+			{
+				Category = Const.LogCategory.InternalDiagnostic,
+				Message = "Checking for updates",
+				UpdateUrl,
+				_info.IsPreProductionEnvironment,
+			});
+
 			var appParentPath = Path.GetDirectoryName(_appPath);
 			var updateDataPath = Path.Combine(appParentPath, "UpdateData");
 
 			if (Directory.Exists(updateDataPath))
 				FileUtil.Cleanup(updateDataPath, "*.*", false, true);
-
-			Log.Info(new
-			{
-				Category = Const.LogCategory.InternalDiagnostic,
-				Message = string.Format("Auto update URL: {0}", UpdateUrl),
-				IsPreProductionEnvironment = _info.IsPreProductionEnvironment,
-			});
 
 			if (string.IsNullOrEmpty(UpdateUrl))
 				return;
