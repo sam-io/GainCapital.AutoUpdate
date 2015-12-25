@@ -135,7 +135,7 @@ namespace GainCapital.AutoUpdate
 			Log.Info(new
 			{
 				Category = Const.LogCategory.InternalDiagnostic,
-				Message = string.Format("Updating {0}", _info.NugetAppName),
+				Message = string.Format("Installing update: {0}", _info.NugetAppName),
 				OldVersion = _curVersion.ToString(),
 				NewVersion = updateVersion.ToString(),
 			});
