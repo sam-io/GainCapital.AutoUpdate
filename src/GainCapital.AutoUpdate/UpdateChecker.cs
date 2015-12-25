@@ -116,6 +116,7 @@ namespace GainCapital.AutoUpdate
 				Message = "Checking for updates",
 				UpdateUrl,
 				_info.IsPreProductionEnvironment,
+				CurrentVersion = _curVersion.ToString(),
 			});
 
 			if (Directory.Exists(_updateDataPath))
