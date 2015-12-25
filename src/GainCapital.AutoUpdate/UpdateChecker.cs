@@ -105,9 +105,6 @@ namespace GainCapital.AutoUpdate
 
 		private void CheckUpdatesOnce()
 		{
-			var packageId = _info.NugetAppName;
-			var updateUrl = _info.NugetServerUrl;
-
 			var appParentPath = Path.GetDirectoryName(_appPath);
 			var updateDataPath = Path.Combine(appParentPath, "UpdateData");
 
@@ -117,22 +114,22 @@ namespace GainCapital.AutoUpdate
 			Log.Info(new
 			{
 				Category = Const.LogCategory.InternalDiagnostic,
-				Message = string.Format("Auto update URL: {0}", updateUrl),
+				Message = string.Format("Auto update URL: {0}", UpdateUrl),
 				IsPreProductionEnvironment = _info.IsPreProductionEnvironment,
 			});
 
-			if (string.IsNullOrEmpty(updateUrl))
+			if (string.IsNullOrEmpty(UpdateUrl))
 				return;
 
-			var repo = PackageRepositoryFactory.Default.CreateRepository(updateUrl);
-			var lastPackage = GetLastPackage(repo, packageId);
+			var repo = PackageRepositoryFactory.Default.CreateRepository(UpdateUrl);
+			var lastPackage = GetLastPackage(repo, PackageId);
 			var updateVersion = lastPackage.Version.Version;
 
 			if (updateVersion <= _curVersion)
 				return;
 
 			var packageManager = new PackageManager(repo, updateDataPath);
-			packageManager.InstallPackage(packageId, lastPackage.Version, true, false);
+			packageManager.InstallPackage(PackageId, lastPackage.Version, true, false);
 
 			Log.Info(new
 			{
@@ -142,7 +139,7 @@ namespace GainCapital.AutoUpdate
 				NewVersion = updateVersion.ToString(),
 			});
 
-			var packagePath = Path.Combine(updateDataPath, packageId + "." + lastPackage.Version);
+			var packagePath = Path.Combine(updateDataPath, PackageId + "." + lastPackage.Version);
 			var updateDeploymentPath = Path.Combine(appParentPath, "v" + lastPackage.Version);
 			var updatedCurrentPath = Path.Combine(appParentPath, "current");
 			var packageBinPath = Path.Combine(packagePath, "lib");
@@ -252,5 +249,9 @@ namespace GainCapital.AutoUpdate
 
 		private string _appPath;
 		private Version _curVersion;
+
+		private string PackageId { get { return _info.NugetAppName; } }
+
+		private string UpdateUrl { get { return _info.NugetServerUrl; } }
 	}
 }
