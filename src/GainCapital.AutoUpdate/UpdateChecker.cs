@@ -152,6 +152,10 @@ namespace GainCapital.AutoUpdate
 			var packageBinPath = Path.Combine(packagePath, "lib");
 
 			Copy(packageBinPath, updateDeploymentPath, UpdateFileTypes);
+
+			if (_info.CopyContent)
+				Copy(Path.Combine(packagePath, "content"), updateDeploymentPath, new[] { "*.*" });
+
 			Copy(_appPath, updateDeploymentPath, new[] { "*.log" });
 
 			_info.OnUpdate(packagePath, updateDeploymentPath);

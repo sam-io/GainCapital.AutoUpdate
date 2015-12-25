@@ -32,6 +32,8 @@ namespace GainCapital.AutoUpdate
 
 		public Action<string, string> Update;
 
+		public bool CopyContent = true;
+
 		public void OnUpdate(string stagingPath, string targetPath)
 		{
 			if (Update != null)
