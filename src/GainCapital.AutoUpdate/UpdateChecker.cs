@@ -148,7 +148,6 @@ namespace GainCapital.AutoUpdate
 
 			var packagePath = Path.Combine(_updateDataPath, PackageId + "." + package.Version);
 			var updateDeploymentPath = Path.Combine(_appParentPath, "v" + package.Version);
-			var updatedCurrentPath = Path.Combine(_appParentPath, "current");
 			var packageBinPath = Path.Combine(packagePath, "lib");
 
 			Copy(packageBinPath, updateDeploymentPath, UpdateFileTypes);
@@ -157,6 +156,7 @@ namespace GainCapital.AutoUpdate
 			_info.OnUpdate(packagePath, updateDeploymentPath);
 
 			var updaterPath = Path.Combine(updateDeploymentPath, "GainCapital.Updater.exe");
+			var updatedCurrentPath = Path.Combine(_appParentPath, "current");
 
 			var appMode = GetAppMode(_host);
 			var startingName = (appMode == AppMode.Service) ? _info.ServiceName : _info.ExeName;
@@ -216,7 +216,7 @@ namespace GainCapital.AutoUpdate
 			});
 		}
 
-		static int Copy(string sourcePath, string targetPath, string[] fileTypes)
+		public static int Copy(string sourcePath, string targetPath, string[] fileTypes)
 		{
 			var res = 0;
 
