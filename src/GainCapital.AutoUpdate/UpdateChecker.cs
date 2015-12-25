@@ -52,6 +52,8 @@ namespace GainCapital.AutoUpdate
 			_appParentPath = Path.GetDirectoryName(_appPath);
 			_updateDataPath = Path.Combine(_appParentPath, "UpdateData");
 
+			_repository = PackageRepositoryFactory.Default.CreateRepository(UpdateUrl);
+
 			lock (_thread)
 			{
 				_thread.Start();
@@ -122,8 +124,7 @@ namespace GainCapital.AutoUpdate
 			if (string.IsNullOrEmpty(UpdateUrl))
 				return;
 
-			var repo = PackageRepositoryFactory.Default.CreateRepository(UpdateUrl);
-			var lastPackage = GetLastPackage(repo, PackageId);
+			var lastPackage = GetLastPackage(_repository, PackageId);
 			var updateVersion = lastPackage.Version.Version;
 
 			if (updateVersion <= _curVersion)
@@ -137,7 +138,7 @@ namespace GainCapital.AutoUpdate
 				NewVersion = updateVersion.ToString(),
 			});
 
-			var packageManager = new PackageManager(repo, _updateDataPath);
+			var packageManager = new PackageManager(_repository, _updateDataPath);
 			packageManager.InstallPackage(PackageId, lastPackage.Version, true, false);
 
 			var packagePath = Path.Combine(_updateDataPath, PackageId + "." + lastPackage.Version);
@@ -238,6 +239,8 @@ namespace GainCapital.AutoUpdate
 			var res = Path.GetDirectoryName(appender.File);
 			return res;
 		}
+
+		private IPackageRepository _repository;
 
 		private readonly UpdatingInfo _info;
 		private readonly ManualResetEvent _terminationEvent = new ManualResetEvent(false);
