@@ -52,7 +52,7 @@
 		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\GainCapital.AutoUpdate\GainCapital.AutoUpdate.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)" -IncludeReferencedProjects'
 			ContinueOnError='false'/>
 
-		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\DebugProject\DebugProject.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)" -IncludeReferencedProjects'
+		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\DebugProject\DebugProject.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)"'
 			ContinueOnError='false'/>
 	</Target>
 </Project>

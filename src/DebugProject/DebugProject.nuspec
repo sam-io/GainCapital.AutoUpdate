@@ -9,4 +9,14 @@
     <language>en-GB</language>
     <licenseUrl>https://github.com/cityindex/GainCapital.AutoUpdate/LICENSE</licenseUrl>
   </metadata>
+  <files>
+    <file src="..\..\bin\GainCapital.AutoUpdate.dll" target="lib\net45\"/>
+    <file src="..\..\bin\GainCapital.Updater.exe" target="lib\net45\"/>
+    <file src="..\..\bin\log4net.dll" target="lib\net45\"/>
+    <file src="..\..\bin\Microsoft.Web.XmlTransform.dll" target="lib\net45\"/>
+    <file src="..\..\bin\NuGet.Core.dll" target="lib\net45\"/>
+    <file src="..\..\bin\Topshelf.dll" target="lib\net45\"/>
+    <file src="..\..\bin\Topshelf.Log4Net.dll" target="lib\net45\"/>
+    <file src="..\..\bin\GainCapital.AutoUpdate.DebugProject.exe.config" target="content\net45\Config\"/>
+  </files>
 </package>
