@@ -141,13 +141,13 @@ namespace GainCapital.AutoUpdate
 			InstallUpdate(lastPackage);
 		}
 
-		private void InstallUpdate(IPackage lastPackage)
+		private void InstallUpdate(IPackage package)
 		{
 			var packageManager = new PackageManager(_repository, _updateDataPath);
-			packageManager.InstallPackage(PackageId, lastPackage.Version, true, false);
+			packageManager.InstallPackage(PackageId, package.Version, true, false);
 
-			var packagePath = Path.Combine(_updateDataPath, PackageId + "." + lastPackage.Version);
-			var updateDeploymentPath = Path.Combine(_appParentPath, "v" + lastPackage.Version);
+			var packagePath = Path.Combine(_updateDataPath, PackageId + "." + package.Version);
+			var updateDeploymentPath = Path.Combine(_appParentPath, "v" + package.Version);
 			var updatedCurrentPath = Path.Combine(_appParentPath, "current");
 			var packageBinPath = Path.Combine(packagePath, "lib");
 
