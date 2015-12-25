@@ -49,6 +49,9 @@ namespace GainCapital.AutoUpdate
 
 			_curVersion = new Version(FileVersionInfo.GetVersionInfo(curAssemblyPath).FileVersion);
 
+			_appParentPath = Path.GetDirectoryName(_appPath);
+			_updateDataPath = Path.Combine(_appParentPath, "UpdateData");
+
 			lock (_thread)
 			{
 				_thread.Start();
@@ -113,11 +116,8 @@ namespace GainCapital.AutoUpdate
 				_info.IsPreProductionEnvironment,
 			});
 
-			var appParentPath = Path.GetDirectoryName(_appPath);
-			var updateDataPath = Path.Combine(appParentPath, "UpdateData");
-
-			if (Directory.Exists(updateDataPath))
-				FileUtil.Cleanup(updateDataPath, "*.*", false, true);
+			if (Directory.Exists(_updateDataPath))
+				FileUtil.Cleanup(_updateDataPath, "*.*", false, true);
 
 			if (string.IsNullOrEmpty(UpdateUrl))
 				return;
@@ -129,9 +129,6 @@ namespace GainCapital.AutoUpdate
 			if (updateVersion <= _curVersion)
 				return;
 
-			var packageManager = new PackageManager(repo, updateDataPath);
-			packageManager.InstallPackage(PackageId, lastPackage.Version, true, false);
-
 			Log.Info(new
 			{
 				Category = Const.LogCategory.InternalDiagnostic,
@@ -140,9 +137,12 @@ namespace GainCapital.AutoUpdate
 				NewVersion = updateVersion.ToString(),
 			});
 
-			var packagePath = Path.Combine(updateDataPath, PackageId + "." + lastPackage.Version);
-			var updateDeploymentPath = Path.Combine(appParentPath, "v" + lastPackage.Version);
-			var updatedCurrentPath = Path.Combine(appParentPath, "current");
+			var packageManager = new PackageManager(repo, _updateDataPath);
+			packageManager.InstallPackage(PackageId, lastPackage.Version, true, false);
+
+			var packagePath = Path.Combine(_updateDataPath, PackageId + "." + lastPackage.Version);
+			var updateDeploymentPath = Path.Combine(_appParentPath, "v" + lastPackage.Version);
+			var updatedCurrentPath = Path.Combine(_appParentPath, "current");
 			var packageBinPath = Path.Combine(packagePath, "lib");
 
 			Copy(packageBinPath, updateDeploymentPath, UpdateFileTypes);
@@ -249,6 +249,8 @@ namespace GainCapital.AutoUpdate
 		private readonly Thread _thread;
 
 		private string _appPath;
+		private string _appParentPath;
+		private string _updateDataPath;
 		private Version _curVersion;
 
 		private string PackageId { get { return _info.NugetAppName; } }
