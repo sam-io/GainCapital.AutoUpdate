@@ -21,6 +21,7 @@ namespace GainCapital.AutoUpdate.Updater
 		{
 			var processArgs = new ProcessStartInfo
 			{
+				WorkingDirectory = Environment.SystemDirectory,
 				FileName = Environment.SystemDirectory + @"\cmd.exe",
 				Arguments = string.Format("/C mklink /j \"{0}\" \"{1}\"", path, target),
 				UseShellExecute = false,
