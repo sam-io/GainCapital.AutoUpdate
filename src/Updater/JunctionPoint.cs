@@ -35,7 +35,7 @@ namespace GainCapital.AutoUpdate.Updater
 			if (process.ExitCode != 0 || !string.IsNullOrEmpty(errors))
 			{
 				var output = process.StandardOutput.ReadToEnd();
-				var message = string.Format("mklink: exit code {0}\r\n{1}\r\n{2}", process.ExitCode, output, errors);
+				var message = string.Format("mklink {0}\r\nexit code {1}\r\n{2}\r\n{3}", processArgs.Arguments, process.ExitCode, output, errors);
 				throw new ApplicationException(message);
 			}
 		}
