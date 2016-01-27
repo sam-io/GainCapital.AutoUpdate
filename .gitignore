@@ -10,3 +10,5 @@ _ReSharper*/
 /src/packages/
 
 /tools/
+
+/src/Tests.Server/Packages/
