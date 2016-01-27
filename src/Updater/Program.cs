@@ -32,7 +32,7 @@ namespace GainCapital.AutoUpdate.Updater
 				try
 				{
 					var parentProcess = Process.GetProcessById(parentProcessId);
-					if (!parentProcess.WaitForExit(30 * 1000))
+					if (!parentProcess.WaitForExit(5 * 60 * 1000))
 						throw new ApplicationException("Parent process didn't stop");
 				}
 				catch (ArgumentException)
