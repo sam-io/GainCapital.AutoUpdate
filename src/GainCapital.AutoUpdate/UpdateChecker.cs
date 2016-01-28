@@ -160,6 +160,8 @@ namespace GainCapital.AutoUpdate
 
 			_info.OnUpdate(packagePath, updateDeploymentPath);
 
+			UpdateVersionMarkerFile(package.Version.ToString());
+
 			var updaterPath = Path.Combine(updateDeploymentPath, "GainCapital.Updater.exe");
 			var updatedCurrentPath = Path.Combine(_appParentPath, "current");
 
@@ -194,6 +196,23 @@ namespace GainCapital.AutoUpdate
 		public static AppMode GetAppMode(HostControl hostControl)
 		{
 			return (hostControl is ConsoleRunHost) ? AppMode.Console : AppMode.Service;
+		}
+
+		void UpdateVersionMarkerFile(string version)
+		{
+			var currentVersionMarkerFiles = Directory.GetFiles(_appParentPath, "current_is_*");
+			foreach (var file in currentVersionMarkerFiles)
+			{
+				var attributes = File.GetAttributes(file);
+				if (attributes.HasFlag(FileAttributes.ReadOnly))
+					File.SetAttributes(file, attributes & ~FileAttributes.ReadOnly);
+
+				File.Delete(file);
+			}
+
+			var newVersionFile = string.Format("current_is_{0}", version);
+			var newVersionFilePath = Path.Combine(_appParentPath, newVersionFile);
+			File.WriteAllText(newVersionFilePath, string.Format("\"{0}\"", version));
 		}
 
 		static string EscapeCommandLineArg(string val)
