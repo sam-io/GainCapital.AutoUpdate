@@ -212,7 +212,7 @@ namespace GainCapital.AutoUpdate
 
 			var newVersionFile = string.Format("current_is_{0}", version);
 			var newVersionFilePath = Path.Combine(_appParentPath, newVersionFile);
-			File.WriteAllText(newVersionFilePath, string.Format("\"{0}\"", version));
+			File.WriteAllText(newVersionFilePath, string.Format("\"{0}\"\r\n", version));
 		}
 
 		static string EscapeCommandLineArg(string val)
