@@ -194,8 +194,8 @@ namespace GainCapital.AutoUpdate
 			if (packages.Count == 0)
 				throw new ApplicationException("No update package is found");
 			packages.Sort((x, y) => x.Version.CompareTo(y.Version));
-			var lastPackage = packages.Last();
-			return lastPackage;
+			var res = packages.Last();
+			return res;
 		}
 
 		public static AppMode GetAppMode(HostControl hostControl)
