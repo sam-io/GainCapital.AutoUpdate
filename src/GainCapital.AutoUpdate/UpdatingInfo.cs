@@ -12,18 +12,18 @@ namespace GainCapital.AutoUpdate
 		public string NugetAppName;
 		public string NugetServerUrl;
 
-		public bool IsPreProductionEnvironment
+		public PackageLevel UpdatePackageLevel
 		{
-			get { return _isPreProductionEnvironment; }
+			get { return _updatePackageLevel; }
 			set
 			{
-				_isPreProductionEnvironment = value;
-				_isPreProductionEnvironmentInitialized = true;
+				_updatePackageLevel = value;
+				_isUpdatePackageLevelInitialized = true;
 			}
 		}
 
-		private bool _isPreProductionEnvironment;
-		private bool _isPreProductionEnvironmentInitialized;
+		private PackageLevel _updatePackageLevel;
+		private bool _isUpdatePackageLevelInitialized;
 
 		public TimeSpan UpdateCheckingPeriod;
 		
@@ -51,8 +51,8 @@ namespace GainCapital.AutoUpdate
 			if (UpdateCheckingPeriod.Ticks == 0)
 				UpdateCheckingPeriod = Settings.UpdateCheckingPeriod;
 
-			if (!_isPreProductionEnvironmentInitialized)
-				_isPreProductionEnvironment = Settings.IsPreProductionEnvironment;
+			if (!_isUpdatePackageLevelInitialized)
+				_updatePackageLevel = Settings.UpdatePackageLevel;
 		}
 	}
 }

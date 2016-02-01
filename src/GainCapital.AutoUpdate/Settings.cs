@@ -26,14 +26,24 @@ namespace GainCapital.AutoUpdate
 			}
 		}
 
-		public static bool IsPreProductionEnvironment
+		public static PackageLevel UpdatePackageLevel
 		{
 			get
 			{
-				var res = Get("IsPreProductionEnvironment");
-				if (string.IsNullOrEmpty(res))
-					return false;
-				return bool.Parse(res);
+				var resText = Get("UpdatePackageLevel");
+				if (string.IsNullOrEmpty(resText))
+				{
+					resText = Get("IsPreProductionEnvironment");
+					if (string.IsNullOrEmpty(resText))
+						return PackageLevel.Release;
+					var res = bool.Parse(resText.ToLowerInvariant());
+					return res ? PackageLevel.RC : PackageLevel.Release;
+				}
+				else
+				{
+					var res = (PackageLevel)Enum.Parse(typeof (PackageLevel), resText, true);
+					return res;
+				}
 			}
 		}
 
@@ -49,4 +59,6 @@ namespace GainCapital.AutoUpdate
 			return res;
 		}
 	}
+
+	public enum PackageLevel { Beta, RC, Release }
 }

@@ -115,7 +115,7 @@ namespace GainCapital.AutoUpdate
 				Category = Const.LogCategory.InternalDiagnostic,
 				Message = "Checking for updates",
 				UpdateUrl,
-				_info.IsPreProductionEnvironment,
+				_info.UpdatePackageLevel,
 				CurrentVersion = _curVersion.ToString(),
 			});
 
@@ -184,8 +184,13 @@ namespace GainCapital.AutoUpdate
 		{
 			var packages = _repository.FindPackagesById(packageId).ToList();
 			packages.RemoveAll(val => !val.IsListed());
-			if (_info.IsPreProductionEnvironment != true)
-				packages.RemoveAll(val => !val.IsReleaseVersion());
+
+			if (_info.UpdatePackageLevel > PackageLevel.Beta)
+				packages.RemoveAll(val => val.Version.SpecialVersion.ToLowerInvariant() == "beta");
+
+			if (_info.UpdatePackageLevel > PackageLevel.RC)
+				packages.RemoveAll(val => val.Version.SpecialVersion.ToLowerInvariant() == "rc");
+
 			if (packages.Count == 0)
 				throw new ApplicationException("No update package is found");
 			packages.Sort((x, y) => x.Version.CompareTo(y.Version));
