@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GainCapital.AutoUpdate
 {
-	static class Settings
+	public static class Settings
 	{
 		public static string NugetServerUrl
 		{
