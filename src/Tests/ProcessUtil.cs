@@ -25,7 +25,7 @@ namespace GainCapital.AutoUpdate.Tests
 			};
 			foreach (var envVar in envVars)
 			{
-				process.StartInfo.EnvironmentVariables.Add(envVar.Key, envVar.Value);
+				process.StartInfo.EnvironmentVariables[envVar.Key] = envVar.Value;
 			}
 
 			process.Start();
