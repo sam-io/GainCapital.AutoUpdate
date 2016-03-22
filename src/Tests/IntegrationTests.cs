@@ -39,6 +39,11 @@ namespace GainCapital.AutoUpdate.Tests
 				File.Delete(file);
 			}
 
+			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg", SearchOption.AllDirectories))
+			{
+				File.Delete(file);
+			}
+
 			if (Directory.Exists(_currentAppPath))
 				Directory.Delete(_currentAppPath);
 
