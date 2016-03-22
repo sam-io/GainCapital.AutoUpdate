@@ -9,7 +9,7 @@ namespace GainCapital.AutoUpdate.Tests
 {
 	static class ProcessUtil
 	{
-		public static void Execute(string appPath, Dictionary<string, string> envVars)
+		public static void Execute(string appPath, string args = null, Dictionary<string, string> envVars = null)
 		{
 			var result = new StringBuilder();
 
@@ -18,36 +18,40 @@ namespace GainCapital.AutoUpdate.Tests
 				StartInfo = new ProcessStartInfo
 				{
 					FileName = appPath,
+					Arguments = args,
 					RedirectStandardOutput = true,
 					RedirectStandardError = true,
 					UseShellExecute = false,
 				}
 			};
-			foreach (var envVar in envVars)
+			if (envVars != null)
 			{
-				process.StartInfo.EnvironmentVariables[envVar.Key] = envVar.Value;
+				foreach (var envVar in envVars)
+				{
+					process.StartInfo.EnvironmentVariables[envVar.Key] = envVar.Value;
+				}
 			}
 
 			process.Start();
 
 			process.OutputDataReceived +=
-				(sender, args) =>
+				(sender, eventArgs) =>
 				{
 					lock (result)
 					{
-						Console.WriteLine(args.Data);
-						result.AppendLine(args.Data);
+						Console.WriteLine(eventArgs.Data);
+						result.AppendLine(eventArgs.Data);
 					}
 				};
 			process.BeginOutputReadLine();
 
 			process.ErrorDataReceived +=
-				(sender, args) =>
+				(sender, eventArgs) =>
 				{
 					lock (result)
 					{
-						Console.WriteLine(args.Data);
-						result.AppendLine(args.Data);
+						Console.WriteLine(eventArgs.Data);
+						result.AppendLine(eventArgs.Data);
 					}
 				};
 			process.BeginErrorReadLine();

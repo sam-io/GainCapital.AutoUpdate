@@ -28,12 +28,15 @@ namespace GainCapital.AutoUpdate.Tests
 			_currentAppPath = Path.Combine(_stagingPath, "current");
 
 			Cleanup();
+
 			Directory.CreateDirectory(_stagingPath);
 		}
 
-		[TearDown]
 		public static void Cleanup()
 		{
+			if (Directory.Exists(_currentAppPath))
+				Directory.Delete(_currentAppPath);
+
 			foreach (var file in Directory.GetFiles(_packagesPath, "*.nupkg"))
 			{
 				File.Delete(file);
@@ -43,9 +46,6 @@ namespace GainCapital.AutoUpdate.Tests
 			{
 				File.Delete(file);
 			}
-
-			if (Directory.Exists(_currentAppPath))
-				Directory.Delete(_currentAppPath);
 
 			if (Directory.Exists(_stagingPath))
 				Directory.Delete(_stagingPath, true);
@@ -58,13 +58,28 @@ namespace GainCapital.AutoUpdate.Tests
 			var appDeploymentPath = Path.Combine(_stagingPath, "v" + version);
 			Directory.CreateDirectory(appDeploymentPath);
 
+			foreach (var file in Directory.GetFiles(_binPath))
+			{
+				var targetFile = Path.Combine(appDeploymentPath, Path.GetFileName(file));
+				File.Copy(file, targetFile);
+			}
+
 			if (!JunctionPoint.Exists(_currentAppPath))
 				JunctionPoint.Create(_currentAppPath, appDeploymentPath);
 			Assert.That(Directory.Exists(_currentAppPath));
 
+			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
+			ProcessUtil.Execute("msbuild.exe", $"{buildFilePath} /t:Build /t:Package /p:BUILD_VERSION=1.2.0 /p:VERSION_SUFFIX=\"-rc\"");
+
+			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg"))
+			{
+				var targetFile = Path.Combine(_packagesPath, Path.GetFileName(file));
+				File.Copy(file, targetFile);
+			}
+
 			var testAppPath = Path.Combine(_currentAppPath, typeof(TestApp.Program).Assembly.ManifestModule.Name);
 
-			ProcessUtil.Execute(testAppPath,
+			ProcessUtil.Execute(testAppPath, null,
 				new Dictionary<string, string>
 				{
 					{ "NugetServerUrl", Settings.NugetUrl },
