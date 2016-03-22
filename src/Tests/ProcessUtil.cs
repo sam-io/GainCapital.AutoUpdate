@@ -9,7 +9,7 @@ namespace GainCapital.AutoUpdate.Tests
 {
 	static class ProcessUtil
 	{
-		public static void Execute(string appPath)
+		public static void Execute(string appPath, Dictionary<string, string> envVars)
 		{
 			var result = new StringBuilder();
 
@@ -23,6 +23,10 @@ namespace GainCapital.AutoUpdate.Tests
 					UseShellExecute = false,
 				}
 			};
+			foreach (var envVar in envVars)
+			{
+				process.StartInfo.EnvironmentVariables.Add(envVar.Key, envVar.Value);
+			}
 
 			process.Start();
 
@@ -31,6 +35,7 @@ namespace GainCapital.AutoUpdate.Tests
 				{
 					lock (result)
 					{
+						Console.WriteLine(args.Data);
 						result.AppendLine(args.Data);
 					}
 				};
@@ -41,6 +46,7 @@ namespace GainCapital.AutoUpdate.Tests
 				{
 					lock (result)
 					{
+						Console.WriteLine(args.Data);
 						result.AppendLine(args.Data);
 					}
 				};
