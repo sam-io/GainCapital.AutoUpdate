@@ -17,6 +17,8 @@ namespace GainCapital.AutoUpdate.Tests
 		public static void TestUpdating()
 		{
 			var testAppPath = Path.Combine(TestContext.CurrentContext.TestDirectory, typeof(TestApp.Program).Assembly.ManifestModule.Name);
+
+			ProcessUtil.Execute(testAppPath);
 		}
 	}
 }
