@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ namespace GainCapital.AutoUpdate.Tests
 		[Test]
 		public static void TestUpdating()
 		{
+			var testAppPath = Path.Combine(TestContext.CurrentContext.TestDirectory, typeof(TestApp.Program).Assembly.ManifestModule.Name);
 		}
 	}
 }
