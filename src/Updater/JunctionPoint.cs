@@ -13,6 +13,8 @@ namespace GainCapital.AutoUpdate.Updater
 		public static bool Exists(string path)
 		{
 			var dirInfo = new DirectoryInfo(path);
+			if (!dirInfo.Exists)
+				return false;
 			var res = dirInfo.Attributes.HasFlag(FileAttributes.ReparsePoint);
 			return res;
 		}
