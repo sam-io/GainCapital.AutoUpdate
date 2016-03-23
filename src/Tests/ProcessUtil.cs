@@ -9,29 +9,35 @@ namespace GainCapital.AutoUpdate.Tests
 {
 	static class ProcessUtil
 	{
-		public static void Execute(string appPath, string args = null, Dictionary<string, string> envVars = null)
+		public static void Execute(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
 		{
 			var result = new StringBuilder();
 
-			var process = new Process
+			var startInfo = new ProcessStartInfo
 			{
-				StartInfo = new ProcessStartInfo
-				{
-					FileName = appPath,
-					Arguments = args,
-					RedirectStandardOutput = true,
-					RedirectStandardError = true,
-					UseShellExecute = false,
-				}
+				FileName = appPath,
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				UseShellExecute = false,
 			};
+
+			if (args != null)
+				startInfo.Arguments = args;
+			if (curPath != null)
+				startInfo.WorkingDirectory = curPath;
+
 			if (envVars != null)
 			{
 				foreach (var envVar in envVars)
 				{
-					process.StartInfo.EnvironmentVariables[envVar.Key] = envVar.Value;
+					startInfo.EnvironmentVariables[envVar.Key] = envVar.Value;
 				}
 			}
 
+			var process = new Process
+			{
+				StartInfo = startInfo,
+			};
 			process.Start();
 
 			process.OutputDataReceived +=
