@@ -54,12 +54,14 @@ namespace GainCapital.AutoUpdate.Tests
 		[Test]
 		public static void TestUpdating()
 		{
-			var testAppAssembly = typeof(TestApp.Program).Assembly;
-			var versionText = FileVersionInfo.GetVersionInfo(testAppAssembly.Location).FileVersion;
+			var testAppPath = Path.Combine(_binPath, "TestApp");
+			var testAppAssemblyPath = Path.Combine(_binPath, @"TestApp\TestApp.exe");
+
+			var versionText = FileVersionInfo.GetVersionInfo(testAppAssemblyPath).FileVersion;
 			var appDeploymentPath = Path.Combine(_stagingPath, "v" + versionText);
 			Directory.CreateDirectory(appDeploymentPath);
 
-			foreach (var file in Directory.GetFiles(_binPath))
+			foreach (var file in Directory.GetFiles(testAppPath))
 			{
 				var targetFile = Path.Combine(appDeploymentPath, Path.GetFileName(file));
 				File.Copy(file, targetFile);
@@ -80,8 +82,6 @@ namespace GainCapital.AutoUpdate.Tests
 				var targetFile = Path.Combine(_packagesPath, Path.GetFileName(file));
 				File.Copy(file, targetFile);
 			}
-
-			var testAppPath = Path.Combine(_currentAppPath, testAppAssembly.ManifestModule.Name);
 
 			ProcessUtil.Execute(testAppPath, null,
 				new Dictionary<string, string>
