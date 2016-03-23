@@ -45,7 +45,7 @@ namespace GainCapital.AutoUpdate.Updater
 				JunctionPoint.Create(targetPath, sourcePath);
 				Start(appMode, startingName, targetPath);
 
-				LogInfo("Finished successfully");
+				LogInfo(parentProcessId + " - finished successfully");
 
 				LogFile.Dispose();
 			}
@@ -68,7 +68,7 @@ namespace GainCapital.AutoUpdate.Updater
 			{
 				if (LogFile == null)
 				{
-					var path = Path.Combine(Directory.GetCurrentDirectory(), "Updater.log");
+					var path = Path.Combine(Directory.GetCurrentDirectory(), "GainCapital.AutoUpdate.log");
 					LogFile = new StreamWriter(path, true);
 				}
 
