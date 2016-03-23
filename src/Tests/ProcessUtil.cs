@@ -57,7 +57,10 @@ namespace GainCapital.AutoUpdate.Tests
 			process.BeginErrorReadLine();
 
 			if (!process.WaitForExit(10 * 1000))
+			{
 				process.Kill();
+				process.WaitForExit();
+			}
 
 			if (process.ExitCode != 0)
 				throw new ApplicationException(result.ToString());

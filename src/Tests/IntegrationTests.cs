@@ -87,6 +87,7 @@ namespace GainCapital.AutoUpdate.Tests
 				{
 					{ "NugetServerUrl", Settings.NugetUrl },
 					{ "UpdatePackageLevel", "Beta" },
+					{ "UpdateCheckingPeriod", "0:0:1" },
 				});
 		}
 
