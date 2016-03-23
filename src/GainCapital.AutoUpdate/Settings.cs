@@ -41,7 +41,7 @@ namespace GainCapital.AutoUpdate
 				}
 				else
 				{
-					var res = (PackageLevel)Enum.Parse(typeof (PackageLevel), resText, true);
+					var res = (PackageLevel)Enum.Parse(typeof(PackageLevel), resText, true);
 					return res;
 				}
 			}
