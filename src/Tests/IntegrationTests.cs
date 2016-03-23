@@ -83,7 +83,8 @@ namespace GainCapital.AutoUpdate.Tests
 				File.Copy(file, targetFile);
 			}
 
-			ProcessUtil.Execute(testAppPath, null,
+			var testExePath = Path.Combine(_currentAppPath, Path.GetFileName(testAppAssemblyPath));
+			ProcessUtil.Execute(testExePath, null,
 				new Dictionary<string, string>
 				{
 					{ "NugetServerUrl", Settings.NugetUrl },
