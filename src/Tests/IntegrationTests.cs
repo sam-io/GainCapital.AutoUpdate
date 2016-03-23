@@ -54,8 +54,8 @@ namespace GainCapital.AutoUpdate.Tests
 		[Test]
 		public static void TestUpdating()
 		{
-			var testAppPath = Path.Combine(_binPath, "TestApp");
-			var testAppAssemblyPath = Path.Combine(_binPath, @"TestApp\TestApp.exe");
+			var testAppPath = Path.Combine(_binPath, "DebugApp");
+			var testAppAssemblyPath = Path.Combine(_binPath, @"DebugApp\GainCapital.AutoUpdate.DebugProject.exe");
 
 			var versionText = FileVersionInfo.GetVersionInfo(testAppAssemblyPath).FileVersion;
 			var appDeploymentPath = Path.Combine(_stagingPath, "v" + versionText);
