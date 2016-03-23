@@ -54,8 +54,8 @@ namespace GainCapital.AutoUpdate.Tests
 		[Test]
 		public static void TestUpdating()
 		{
-			var version = FileVersionInfo.GetVersionInfo(typeof(TestApp.Program).Assembly.Location).FileVersion;
-			var appDeploymentPath = Path.Combine(_stagingPath, "v" + version);
+			var versionText = FileVersionInfo.GetVersionInfo(typeof(TestApp.Program).Assembly.Location).FileVersion;
+			var appDeploymentPath = Path.Combine(_stagingPath, "v" + versionText);
 			Directory.CreateDirectory(appDeploymentPath);
 
 			foreach (var file in Directory.GetFiles(_binPath))
@@ -68,8 +68,11 @@ namespace GainCapital.AutoUpdate.Tests
 				JunctionPoint.Create(_currentAppPath, appDeploymentPath);
 			Assert.That(Directory.Exists(_currentAppPath));
 
+			var version = new Version(versionText);
+			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
 			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
-			ProcessUtil.Execute("msbuild.exe", $"{buildFilePath} /t:Build /t:Package /p:BUILD_VERSION=1.2.0 /p:VERSION_SUFFIX=\"-rc\"");
+			var buildArgs = $"{buildFilePath} /t:Build /t:Package /p:BUILD_VERSION={newVersion} /p:VERSION_SUFFIX=\"-rc\"";
+			ProcessUtil.Execute("msbuild.exe", buildArgs);
 
 			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg"))
 			{
