@@ -55,7 +55,7 @@ namespace GainCapital.AutoUpdate.Tests
 		public static void TestUpdating()
 		{
 			var testAppPath = Path.Combine(_binPath, "DebugApp");
-			var testAppAssemblyPath = Path.Combine(_binPath, @"DebugApp\GainCapital.AutoUpdate.DebugProject.exe");
+			var testAppAssemblyPath = Path.Combine(_binPath, "DebugApp", TestAppExeName);
 
 			var versionText = FileVersionInfo.GetVersionInfo(testAppAssemblyPath).FileVersion;
 			var appDeploymentPath = Path.Combine(_stagingPath, "v" + versionText);
@@ -83,7 +83,7 @@ namespace GainCapital.AutoUpdate.Tests
 				File.Copy(file, targetFile);
 			}
 
-			var testExePath = Path.Combine(_currentAppPath, Path.GetFileName(testAppAssemblyPath));
+			var testExePath = Path.Combine(_currentAppPath, TestAppExeName);
 			var testProcess = ProcessUtil.Execute(testExePath, null,
 				new Dictionary<string, string>
 				{
@@ -95,6 +95,8 @@ namespace GainCapital.AutoUpdate.Tests
 			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
 			Assert.That(updaterLog.Contains($"{testProcess.Id} - finished successfully"));
 		}
+
+		private const string TestAppExeName = "GainCapital.AutoUpdate.DebugProject.exe";
 
 		private static string _binPath;
 		private static string _stagingPath;
