@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -92,8 +93,35 @@ namespace GainCapital.AutoUpdate.Tests
 					{ "UpdateCheckingPeriod", "0:0:1" },
 				});
 
+			WaitUpdateFinished();
+
 			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
 			Assert.That(updaterLog.Contains($"{testProcess.Id} - finished successfully"));
+		}
+
+		static void WaitUpdateFinished()
+		{
+			for (int i = 0; i < 10; i++)
+			{
+				var testProcesses = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(TestAppExeName));
+				var newTestApps = testProcesses.Where(process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
+
+				if (newTestApps.Count > 1)
+					throw new ApplicationException();
+
+				if (newTestApps.Count == 1)
+				{
+					var newTestApp = newTestApps.First();
+					newTestApp.Kill();
+					if (!newTestApp.WaitForExit(5 * 1000))
+						throw new ApplicationException();
+					return;
+				}
+
+				Thread.Sleep(TimeSpan.FromSeconds(5));
+			}
+
+			throw new ApplicationException();
 		}
 
 		private const string TestAppExeName = "GainCapital.AutoUpdate.DebugProject.exe";
