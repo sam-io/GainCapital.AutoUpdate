@@ -120,7 +120,7 @@ namespace GainCapital.AutoUpdate
 			});
 
 			if (Directory.Exists(_updateDataPath))
-				FileUtil.Cleanup(_updateDataPath, "*.*", false, true);
+				FileUtil.Cleanup(_updateDataPath, "*.*", ".log", false, true);
 
 			if (string.IsNullOrEmpty(UpdateUrl))
 				return;
@@ -173,7 +173,7 @@ namespace GainCapital.AutoUpdate
 
 			Process.Start(new ProcessStartInfo
 			{
-				WorkingDirectory = GetMainLogFolder() ?? Path.GetTempPath(),
+				WorkingDirectory = GetMainLogFolder() ?? _updateDataPath,
 				FileName = updaterPath,
 				Arguments = args,
 			});

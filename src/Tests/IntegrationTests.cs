@@ -84,13 +84,16 @@ namespace GainCapital.AutoUpdate.Tests
 			}
 
 			var testExePath = Path.Combine(_currentAppPath, Path.GetFileName(testAppAssemblyPath));
-			ProcessUtil.Execute(testExePath, null,
+			var testProcess = ProcessUtil.Execute(testExePath, null,
 				new Dictionary<string, string>
 				{
 					{ "NugetServerUrl", Settings.NugetUrl },
 					{ "UpdatePackageLevel", "Beta" },
 					{ "UpdateCheckingPeriod", "0:0:1" },
 				});
+
+			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
+			Assert.That(updaterLog.Contains($"{testProcess.Id} - finished successfully"));
 		}
 
 		private static string _binPath;

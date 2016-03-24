@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,10 +20,14 @@ namespace GainCapital.AutoUpdate.Updater
 			return ((File.GetAttributes(fileName) & attr) == attr);
 		}
 
-		public static void Cleanup(string path, string wildcard, bool removeThisFolder, bool recursively)
+		public static void Cleanup(string path, string wildcard, string exclude, bool removeThisFolder, bool recursively)
 		{
+			exclude = exclude.ToLowerInvariant();
+
 			foreach (var file in Directory.GetFiles(path, wildcard))
 			{
+				if (Path.GetExtension(file).ToLowerInvariant() == exclude)
+					continue;
 				ResetAttributes(file, FileAttributes.ReadOnly);
 				File.Delete(file);
 			}
@@ -31,20 +36,12 @@ namespace GainCapital.AutoUpdate.Updater
 			{
 				foreach (var directory in Directory.GetDirectories(path))
 				{
-					Cleanup(directory, wildcard, true, true);
+					Cleanup(directory, wildcard, exclude, true, true);
 				}
 			}
 
 			if (removeThisFolder && Directory.GetFileSystemEntries(path).Length == 0)
 				Directory.Delete(path);
-		}
-
-		public static void Cleanup(string path, string[] wildcards, bool removeThisFolder, bool recursively)
-		{
-			foreach (var wildcard in wildcards)
-			{
-				Cleanup(path, wildcard, removeThisFolder, recursively);
-			}
 		}
 	}
 }

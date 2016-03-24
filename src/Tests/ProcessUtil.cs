@@ -9,7 +9,7 @@ namespace GainCapital.AutoUpdate.Tests
 {
 	static class ProcessUtil
 	{
-		public static void Execute(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
+		public static Process Execute(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
 		{
 			var result = new StringBuilder();
 
@@ -70,6 +70,8 @@ namespace GainCapital.AutoUpdate.Tests
 
 			if (process.ExitCode != 0)
 				throw new ApplicationException(result.ToString());
+
+			return process;
 		}
 	}
 }
