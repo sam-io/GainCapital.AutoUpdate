@@ -96,7 +96,7 @@ namespace GainCapital.AutoUpdate.Tests
 			WaitUpdateFinished();
 
 			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
-		    var successMessage = string.Format("{0} - finished successfully", testProcess.Id);
+			var successMessage = string.Format("{0} - finished successfully", testProcess.Id);
 			Assert.That(updaterLog.Contains(successMessage));
 		}
 
