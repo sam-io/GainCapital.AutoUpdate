@@ -75,7 +75,7 @@ namespace GainCapital.AutoUpdate.Tests
 			var version = new Version(versionText);
 			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
 			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
-			var buildArgs = $"{buildFilePath} /t:Build /t:Package /p:BUILD_VERSION={newVersion} /p:VERSION_SUFFIX=\"-rc\"";
+			var buildArgs = string.Format("{0} /t:Build /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\"", buildFilePath, newVersion);
 			ProcessUtil.Execute("msbuild.exe", buildArgs);
 
 			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg"))
@@ -96,7 +96,8 @@ namespace GainCapital.AutoUpdate.Tests
 			WaitUpdateFinished();
 
 			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
-			Assert.That(updaterLog.Contains($"{testProcess.Id} - finished successfully"));
+		    var successMessage = string.Format("{0} - finished successfully", testProcess.Id);
+			Assert.That(updaterLog.Contains(successMessage));
 		}
 
 		static void WaitUpdateFinished()
