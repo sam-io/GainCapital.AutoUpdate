@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace GainCapital.AutoUpdate.Updater
+namespace GainCapital.AutoUpdate
 {
 	public static class FileUtil
 	{
