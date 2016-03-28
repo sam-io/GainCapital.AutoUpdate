@@ -79,18 +79,7 @@ namespace GainCapital.AutoUpdate.Tests
 		{
 			var testExePath = Path.Combine(_currentAppPath, TestAppExeName);
 
-			var versionText = FileVersionInfo.GetVersionInfo(testExePath).FileVersion;
-			var version = new Version(versionText);
-			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
-			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
-			var buildArgs = string.Format("{0} /t:Build /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\"", buildFilePath, newVersion);
-			ProcessUtil.Execute("msbuild.exe", buildArgs);
-
-			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg"))
-			{
-				var targetFile = Path.Combine(_packagesPath, Path.GetFileName(file));
-				File.Copy(file, targetFile);
-			}
+			BuildAndPublishUpdate(testExePath);
 
 			var testProcess = ProcessUtil.Execute(testExePath, null,
 				new Dictionary<string, string>
@@ -105,6 +94,23 @@ namespace GainCapital.AutoUpdate.Tests
 			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
 			var successMessage = string.Format("{0} - finished successfully", testProcess.Id);
 			Assert.That(updaterLog.Contains(successMessage));
+		}
+
+		static void BuildAndPublishUpdate(string testExePath)
+		{
+			var versionText = FileVersionInfo.GetVersionInfo(testExePath).FileVersion;
+			var version = new Version(versionText);
+			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
+			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
+			var buildArgs = string.Format("{0} /t:Build /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\"", buildFilePath,
+				newVersion);
+			ProcessUtil.Execute("msbuild.exe", buildArgs);
+
+			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg"))
+			{
+				var targetFile = Path.Combine(_packagesPath, Path.GetFileName(file));
+				File.Copy(file, targetFile);
+			}
 		}
 
 		static void WaitUpdateFinished()
