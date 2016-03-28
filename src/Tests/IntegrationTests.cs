@@ -77,7 +77,9 @@ namespace GainCapital.AutoUpdate.Tests
 		[Test]
 		public static void TestUpdatingOnce()
 		{
-			var versionText = FileVersionInfo.GetVersionInfo(Path.Combine(_currentAppPath, TestAppExeName)).FileVersion;
+			var testExePath = Path.Combine(_currentAppPath, TestAppExeName);
+
+			var versionText = FileVersionInfo.GetVersionInfo(testExePath).FileVersion;
 			var version = new Version(versionText);
 			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
 			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
@@ -90,7 +92,6 @@ namespace GainCapital.AutoUpdate.Tests
 				File.Copy(file, targetFile);
 			}
 
-			var testExePath = Path.Combine(_currentAppPath, TestAppExeName);
 			var testProcess = ProcessUtil.Execute(testExePath, null,
 				new Dictionary<string, string>
 				{
