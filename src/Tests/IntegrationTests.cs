@@ -31,6 +31,28 @@ namespace GainCapital.AutoUpdate.Tests
 			Cleanup();
 
 			Directory.CreateDirectory(_stagingPath);
+
+			InitTestApp();
+		}
+
+		static void InitTestApp()
+		{
+			var testAppPath = Path.Combine(_binPath, "DebugApp");
+			var testAppAssemblyPath = Path.Combine(_binPath, "DebugApp", TestAppExeName);
+
+			var versionText = FileVersionInfo.GetVersionInfo(testAppAssemblyPath).FileVersion;
+			var appDeploymentPath = Path.Combine(_stagingPath, "v" + versionText);
+			Directory.CreateDirectory(appDeploymentPath);
+
+			foreach (var file in Directory.GetFiles(testAppPath))
+			{
+				var targetFile = Path.Combine(appDeploymentPath, Path.GetFileName(file));
+				File.Copy(file, targetFile);
+			}
+
+			if (!JunctionPoint.Exists(_currentAppPath))
+				JunctionPoint.Create(_currentAppPath, appDeploymentPath);
+			Assert.That(Directory.Exists(_currentAppPath));
 		}
 
 		public static void Cleanup()
@@ -55,23 +77,7 @@ namespace GainCapital.AutoUpdate.Tests
 		[Test]
 		public static void TestUpdating()
 		{
-			var testAppPath = Path.Combine(_binPath, "DebugApp");
-			var testAppAssemblyPath = Path.Combine(_binPath, "DebugApp", TestAppExeName);
-
-			var versionText = FileVersionInfo.GetVersionInfo(testAppAssemblyPath).FileVersion;
-			var appDeploymentPath = Path.Combine(_stagingPath, "v" + versionText);
-			Directory.CreateDirectory(appDeploymentPath);
-
-			foreach (var file in Directory.GetFiles(testAppPath))
-			{
-				var targetFile = Path.Combine(appDeploymentPath, Path.GetFileName(file));
-				File.Copy(file, targetFile);
-			}
-
-			if (!JunctionPoint.Exists(_currentAppPath))
-				JunctionPoint.Create(_currentAppPath, appDeploymentPath);
-			Assert.That(Directory.Exists(_currentAppPath));
-
+			var versionText = FileVersionInfo.GetVersionInfo(Path.Combine(_currentAppPath, TestAppExeName)).FileVersion;
 			var version = new Version(versionText);
 			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
 			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
