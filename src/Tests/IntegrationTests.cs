@@ -75,7 +75,7 @@ namespace GainCapital.AutoUpdate.Tests
 		}
 
 		[Test]
-		public static void TestUpdating()
+		public static void TestUpdatingOnce()
 		{
 			var versionText = FileVersionInfo.GetVersionInfo(Path.Combine(_currentAppPath, TestAppExeName)).FileVersion;
 			var version = new Version(versionText);
