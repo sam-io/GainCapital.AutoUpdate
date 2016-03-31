@@ -2,12 +2,14 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
-		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\tools\MSBuildTasks.1.4.0.128\tools</MSBuildCommunityTasksPath>
 		<SourcePath>$(MSBuildProjectDirectory)\src\</SourcePath>
 		<NuGetExe>$(MSBuildProjectDirectory)\src\.nuget\nuget.exe</NuGetExe>
+		<MsBuildVersionOverridePath>$(MSBuildProjectDirectory)\tools\GainCapital.MsBuildVersionOverride\lib\net45\GainCapital.MsBuildVersionOverride.dll</MsBuildVersionOverridePath>
 	</PropertyGroup>
-	<Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
 	<Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+
+	<UsingTask TaskName="VersionOverride" AssemblyFile="$(MsBuildVersionOverridePath)" />
+	<UsingTask TaskName="VersionRestore" AssemblyFile="$(MsBuildVersionOverridePath)" />
 
 	<PropertyGroup>
 		<BUILD_VERSION>0.0.0</BUILD_VERSION>
@@ -20,30 +22,19 @@
 		<AssemblyVersionFiles Include="$(MSBuildProjectDirectory)\**\AssemblyInfo.cs"/>
 	</ItemGroup>
 
-	<Target Name="AssemblyVersionUpdate" Inputs="@(AssemblyVersionFiles)" Outputs="UpdatedAssemblyVersionFiles">
-		<FileUpdate
-			Files="@(AssemblyVersionFiles)"
-			Regex="AssemblyVersion\(&quot;.*&quot;\)"
-			ReplacementText="AssemblyVersion(&quot;$(FullVersion)&quot;)" />
-		<FileUpdate
-			Files="@(AssemblyVersionFiles)"
-			Regex="AssemblyConfiguration\(&quot;.*&quot;\)"
-			ReplacementText="AssemblyConfiguration(&quot;$(SemVersion)&quot;)" />
-		<FileUpdate
-			Files="@(AssemblyVersionFiles)"
-			Regex="AssemblyInformationalVersion\(&quot;.*&quot;\)"
-			ReplacementText="AssemblyInformationalVersion(&quot;$(SemVersion)&quot;)" />
-	</Target>
-
 	<PropertyGroup>
 		<Configuration>Release</Configuration>
 		<Platform>Any CPU</Platform>
 		<SolutionDir>src\</SolutionDir>
 	</PropertyGroup>
 
-	<Target Name="Build" DependsOnTargets="AssemblyVersionUpdate">
+	<Target Name="Build">
 		<Exec Command='"$(NuGetExe)" restore' WorkingDirectory="$(SourcePath)" ContinueOnError='false'/>
+		<VersionOverride CodePath="$(SourcePath)" NewVersion="$(FullVersion)" NewSemanticVersion="$(SemVersion)" BackupChangedFiles="true" />
+
 		<MSBuild Projects="src/GainCapital.AutoUpdate.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+
+		<VersionRestore CodePath="$(SourcePath)"/>
 	</Target>
 
 	<Target Name="Package" DependsOnTargets="Build">

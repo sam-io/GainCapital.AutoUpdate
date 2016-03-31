@@ -7,7 +7,7 @@
 	<Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 	
 	<Target Name="InstallDependencies">
-		<Message Text="Installing MSBuildCommunityTasks" />
-		<Exec Command="$(NuGetCommand) install MSBuildTasks -Version 1.4.0.128 -OutputDirectory tools"/>
+		<Message Text="Installing GainCapital.MsBuildVersionOverride" />
+		<Exec Command="$(NuGetCommand) install GainCapital.MsBuildVersionOverride -Version 1.0.0.20517 -OutputDirectory tools -ExcludeVersion"/>
 	</Target>
 </Project>
