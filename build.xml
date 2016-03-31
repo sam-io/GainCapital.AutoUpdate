@@ -16,10 +16,6 @@
 		<SemVersion>$(FullVersion)$(VERSION_SUFFIX)</SemVersion>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<AssemblyVersionFiles Include="$(MSBuildProjectDirectory)\**\AssemblyInfo.cs"/>
-	</ItemGroup>
-
 	<PropertyGroup>
 		<Configuration>Release</Configuration>
 		<Platform>Any CPU</Platform>
