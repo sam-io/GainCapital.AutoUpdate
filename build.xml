@@ -4,12 +4,10 @@
 	<PropertyGroup>
 		<SourcePath>$(MSBuildProjectDirectory)\src\</SourcePath>
 		<NuGetExe>$(MSBuildProjectDirectory)\src\.nuget\nuget.exe</NuGetExe>
-		<MsBuildVersionOverridePath>$(MSBuildProjectDirectory)\tools\GainCapital.MsBuildVersionOverride\lib\net45\GainCapital.MsBuildVersionOverride.dll</MsBuildVersionOverridePath>
 	</PropertyGroup>
 	<Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 
-	<UsingTask TaskName="VersionOverride" AssemblyFile="$(MsBuildVersionOverridePath)" />
-	<UsingTask TaskName="VersionRestore" AssemblyFile="$(MsBuildVersionOverridePath)" />
+	<Import Project="$(MSBuildProjectDirectory)\tools\GainCapital.MsBuildVersionOverride\lib\net45\GainCapital.MsBuildVersionOverride.Targets" />
 
 	<PropertyGroup>
 		<BUILD_VERSION>0.0.0</BUILD_VERSION>
