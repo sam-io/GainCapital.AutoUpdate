@@ -135,10 +135,11 @@ namespace GainCapital.AutoUpdate.Tests
 				newVersion);
 			ProcessUtil.Execute("msbuild.exe", buildArgs);
 
+			var nugetPath = Path.GetFullPath(Path.Combine(_binPath, @"..\src\.nuget\nuget.exe"));
+
 			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg"))
 			{
-				var targetFile = Path.Combine(_packagesPath, Path.GetFileName(file));
-				File.Copy(file, targetFile);
+				ProcessUtil.Execute(nugetPath, string.Format("push {0}", file));
 			}
 		}
 

@@ -70,7 +70,7 @@ namespace GainCapital.AutoUpdate.Tests
 				};
 			process.BeginErrorReadLine();
 
-			if (!process.WaitForExit(10 * 1000))
+			if (!process.WaitForExit(60 * 1000))
 			{
 				process.Kill();
 				process.WaitForExit();
