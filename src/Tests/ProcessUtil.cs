@@ -10,10 +10,8 @@ namespace GainCapital.AutoUpdate.Tests
 {
 	static class ProcessUtil
 	{
-		public static Process Execute(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
+		public static Process Start(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
 		{
-			var result = new StringBuilder();
-
 			var startInfo = new ProcessStartInfo
 			{
 				FileName = appPath,
@@ -40,6 +38,15 @@ namespace GainCapital.AutoUpdate.Tests
 				StartInfo = startInfo,
 			};
 			process.Start();
+
+			return process;
+		}
+
+		public static Process Execute(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
+		{
+			var process = Start(appPath, args, envVars, curPath);
+
+			var result = new StringBuilder();
 
 			process.OutputDataReceived +=
 				(sender, eventArgs) =>

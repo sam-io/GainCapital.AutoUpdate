@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,6 +35,8 @@ namespace GainCapital.AutoUpdate.Tests
 			Directory.CreateDirectory(_stagingPath);
 
 			InitTestApp();
+
+			StartNugetServer();
 		}
 
 		static void InitTestApp()
@@ -53,6 +57,31 @@ namespace GainCapital.AutoUpdate.Tests
 			if (!JunctionPoint.Exists(_currentAppPath))
 				JunctionPoint.Create(_currentAppPath, appDeploymentPath);
 			Assert.That(Directory.Exists(_currentAppPath));
+		}
+
+		static void StartNugetServer()
+		{
+			var uri = new Uri(Settings.KlondikeUrl);
+			var fileName = Path.GetFileName(uri.LocalPath);
+			var serverPath = Path.Combine(_binPath, "NuGet", Path.GetFileNameWithoutExtension(uri.LocalPath));
+			Directory.CreateDirectory(serverPath);
+
+			var packageFile = Path.Combine(serverPath, fileName);
+
+			var exeFile = Path.Combine(serverPath, @"bin\Klondike.SelfHost.exe");
+			if (!File.Exists(exeFile))
+			{
+				if (File.Exists(packageFile))
+					File.Delete(packageFile);
+				using (var client = new WebClient())
+				{
+					client.DownloadFile(uri, packageFile);
+				}
+
+				ZipFile.ExtractToDirectory(packageFile, serverPath);
+			}
+
+			_nugetServer = ProcessUtil.Start(exeFile, Settings.KlondikeStarArgs);
 		}
 
 		public static void Cleanup()
@@ -144,5 +173,7 @@ namespace GainCapital.AutoUpdate.Tests
 		private static string _stagingPath;
 		private static string _packagesPath;
 		private static string _currentAppPath;
+
+		private static Process _nugetServer;
 	}
 }
