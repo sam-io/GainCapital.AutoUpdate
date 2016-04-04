@@ -145,7 +145,7 @@ namespace GainCapital.AutoUpdate.Tests
 
 			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg"))
 			{
-				ProcessUtil.Execute(nugetPath, string.Format("push {0}", file));
+				ProcessUtil.Execute(nugetPath, string.Format("push {0} -Source {1}", file, Settings.NugetUrl));
 			}
 		}
 
