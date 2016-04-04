@@ -12,11 +12,11 @@ namespace GainCapital.AutoUpdate.DebugProject
 {
 	class Program
 	{
-		static void Main(string[] args)
+		static int Main(string[] args)
 		{
 			XmlConfigurator.Configure();
 
-			HostFactory.Run(x =>
+			var exitCode = HostFactory.Run(x =>
 			{
 				x.Service(settings => new ServiceWorker());
 				x.RunAsLocalSystem();
@@ -36,6 +36,8 @@ namespace GainCapital.AutoUpdate.DebugProject
 
 			if (Debugger.IsAttached)
 				Debugger.Break();
+
+			return (int)exitCode;
 		}
 
 		public const string AppName = "GainCapital.AutoUpdate.DebugProject";
