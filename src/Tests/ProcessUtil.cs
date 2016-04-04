@@ -79,7 +79,7 @@ namespace GainCapital.AutoUpdate.Tests
 			}
 
 			if (process.ExitCode != 0)
-				throw new ApplicationException(result.ToString());
+				throw new ApplicationException(string.Format("Exit code: {0}\r\n", process.ExitCode) + result);
 
 			return process;
 		}
