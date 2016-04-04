@@ -39,6 +39,12 @@ namespace GainCapital.AutoUpdate.Tests
 			StartNugetServer();
 		}
 
+		[TearDown]
+		public static void Uninit()
+		{
+			_nugetServer.Kill();
+		}
+
 		static void InitTestApp()
 		{
 			var testAppPath = Path.Combine(_binPath, "DebugApp");
