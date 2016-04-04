@@ -12,6 +12,8 @@ namespace GainCapital.AutoUpdate.Tests
 	{
 		public static Process Start(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
 		{
+			Console.WriteLine("> {0} {1}", appPath, args);
+
 			var startInfo = new ProcessStartInfo
 			{
 				FileName = appPath,
