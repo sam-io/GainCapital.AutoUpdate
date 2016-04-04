@@ -114,7 +114,7 @@ namespace GainCapital.AutoUpdate.Tests
 		{
 			var testExePath = Path.Combine(_currentAppPath, TestAppExeName);
 
-			BuildAndPublishUpdate(testExePath);
+			var newVersion = BuildAndPublishUpdate(testExePath);
 
 			var testProcess = ProcessUtil.Execute(testExePath, null,
 				new Dictionary<string, string>
@@ -129,9 +129,12 @@ namespace GainCapital.AutoUpdate.Tests
 			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
 			var successMessage = string.Format("{0} - finished successfully", testProcess.Id);
 			Assert.That(updaterLog.Contains(successMessage));
+
+			var updatedVersion = new Version(FileVersionInfo.GetVersionInfo(testExePath).FileVersion);
+			Assert.That(updatedVersion == newVersion);
 		}
 
-		static void BuildAndPublishUpdate(string testExePath)
+		static Version BuildAndPublishUpdate(string testExePath)
 		{
 			var versionText = FileVersionInfo.GetVersionInfo(testExePath).FileVersion;
 			var version = new Version(versionText);
@@ -147,6 +150,8 @@ namespace GainCapital.AutoUpdate.Tests
 			{
 				ProcessUtil.Execute(nugetPath, string.Format("push {0} -Source {1}", file, Settings.NugetUrl));
 			}
+
+			return newVersion;
 		}
 
 		static void WaitUpdateFinished()
