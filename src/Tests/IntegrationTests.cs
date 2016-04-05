@@ -37,6 +37,16 @@ namespace GainCapital.AutoUpdate.Tests
 		[TearDown]
 		public static void Uninit()
 		{
+			try
+			{
+				if (_serviceInstalled)
+					ProcessUtil.Execute(_testExePath, "uninstall");
+			}
+			catch (Exception exc)
+			{
+				Console.WriteLine(exc);
+			}
+
 			if (_nugetServer != null)
 				_nugetServer.Stop(10);
 		}
@@ -109,23 +119,49 @@ namespace GainCapital.AutoUpdate.Tests
 		}
 
 		[Test]
-		public static void TestUpdatingOnce()
+		public static void TestUpdatingOnceConsoleMode()
+		{
+			TestUpdatingOnce(AppMode.Console);
+		}
+
+		[Test]
+		public static void TestUpdatingOnceServiceMode()
+		{
+			TestUpdatingOnce(AppMode.Service);
+		}
+
+		static void TestUpdatingOnce(AppMode mode)
 		{
 			var newVersion = BuildAndPublishUpdate(_testExePath);
 
-
-			var testProcess = ProcessUtil.Execute(_testExePath, null,
-				new Dictionary<string, string>
+			if (mode == AppMode.Console)
+			{
+				ProcessUtil.Execute(_testExePath, null,
+					new Dictionary<string, string>
+					{
+						{ "NugetServerUrl", Settings.NugetUrl },
+						{ "UpdatePackageLevel", Settings.UpdatePackageLevel },
+						{ "UpdateCheckingPeriod", Settings.UpdateCheckingPeriod },
+					});
+			}
+			else if (mode == AppMode.Service)
+			{
+				if (!_serviceInstalled)
 				{
-					{ "NugetServerUrl", Settings.NugetUrl },
-					{ "UpdatePackageLevel", Settings.UpdatePackageLevel },
-					{ "UpdateCheckingPeriod", Settings.UpdateCheckingPeriod },
-				});
+					ProcessUtil.Execute(_testExePath, "install --manual");
+					_serviceInstalled = true;
+				}
 
-			WaitUpdateFinished();
+				SetConfigUpdateParams(_testExePath + ".config");
+				ProcessUtil.Execute(_testExePath, "start");
+			}
+			else
+				throw new NotSupportedException();
+
+			WaitUpdateFinished(mode);
 
 			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
-			var successMessage = string.Format("{0} - finished successfully", testProcess.Id);
+			var successMessage = " - finished successfully";
 			Assert.That(updaterLog.Contains(successMessage));
 
 			var updatedVersion = new Version(FileVersionInfo.GetVersionInfo(_testExePath).FileVersion);
@@ -152,7 +188,7 @@ namespace GainCapital.AutoUpdate.Tests
 			return newVersion;
 		}
 
-		static void WaitUpdateFinished()
+		static void WaitUpdateFinished(AppMode mode)
 		{
 			var testProcesses = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(TestAppExeName));
 			var newTestApps = testProcesses.Where(process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
@@ -165,7 +201,14 @@ namespace GainCapital.AutoUpdate.Tests
 				var newTestApp = newTestApps.First();
 
 				if (!newTestApp.WaitForExit(5 * 1000))
-					newTestApp.Stop();
+				{
+					if (mode == AppMode.Console)
+						newTestApp.Stop();
+					else if (mode == AppMode.Service)
+						ProcessUtil.Execute(_testExePath, "stop");
+					else
+						throw new NotSupportedException();
+				}
 			}
 		}
 
@@ -195,5 +238,7 @@ namespace GainCapital.AutoUpdate.Tests
 		private static string _testExePath;
 
 		private static Process _nugetServer;
+
+		private static bool _serviceInstalled;
 	}
 }
