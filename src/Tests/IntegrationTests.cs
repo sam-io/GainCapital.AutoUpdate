@@ -132,15 +132,17 @@ namespace GainCapital.AutoUpdate.Tests
 
 		static void TestUpdatingOnce(AppMode mode)
 		{
+			Process testProcess = null;
+
 			if (mode == AppMode.Console)
 			{
-				ProcessUtil.Start(_testExePath, null,
+				testProcess = ProcessUtil.Start(_testExePath, null,
 					new Dictionary<string, string>
 					{
 						{ "NugetServerUrl", Settings.NugetUrl },
 						{ "UpdatePackageLevel", Settings.UpdatePackageLevel },
 						{ "UpdateCheckingPeriod", Settings.UpdateCheckingPeriod },
-					});
+					}).Process;
 			}
 			else if (mode == AppMode.Service)
 			{
@@ -156,17 +158,25 @@ namespace GainCapital.AutoUpdate.Tests
 			else
 				throw new NotSupportedException();
 
-			var newVersion = BuildAndPublishUpdate(_testExePath);
+			try
+			{
+				var newVersion = BuildAndPublishUpdate(_testExePath);
 
-			var updaterLogPath = Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log");
-			WaitUpdateFinished(mode, updaterLogPath);
+				var updaterLogPath = Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log");
+				WaitUpdateFinished(mode, updaterLogPath);
 
-			var updaterLog = File.ReadAllText(updaterLogPath);
-			var successMessage = " - finished successfully";
-			Assert.That(updaterLog.Contains(successMessage));
+				var updaterLog = File.ReadAllText(updaterLogPath);
+				var successMessage = " - finished successfully";
+				Assert.That(updaterLog.Contains(successMessage));
 
-			var updatedVersion = new Version(FileVersionInfo.GetVersionInfo(_testExePath).FileVersion);
-			Assert.That(updatedVersion == newVersion);
+				var updatedVersion = new Version(FileVersionInfo.GetVersionInfo(_testExePath).FileVersion);
+				Assert.That(updatedVersion == newVersion);
+			}
+			finally
+			{
+				if (testProcess != null)
+					testProcess.Stop();
+			}
 		}
 
 		static Version BuildAndPublishUpdate(string testExePath)
