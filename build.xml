@@ -7,7 +7,7 @@
 	</PropertyGroup>
 	<Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 
-	<Import Project="$(MSBuildProjectDirectory)\tools\GainCapital.MsBuildVersionOverride\lib\net45\GainCapital.MsBuildVersionOverride.Targets" />
+	
 
 	<PropertyGroup>
 		<BUILD_VERSION>0.0.0</BUILD_VERSION>
@@ -24,11 +24,7 @@
 
 	<Target Name="Build">
 		<Exec Command='"$(NuGetExe)" restore' WorkingDirectory="$(SourcePath)" ContinueOnError='false'/>
-		<VersionOverride CodePath="$(SourcePath)" NewVersion="$(FullVersion)" NewSemanticVersion="$(SemVersion)" BackupChangedFiles="true" />
-
 		<MSBuild Projects="src/GainCapital.AutoUpdate.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=$(Platform)" />
-
-		<VersionRestore CodePath="$(SourcePath)"/>
 	</Target>
 
 	<Target Name="Package" DependsOnTargets="Build">

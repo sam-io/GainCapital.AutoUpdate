@@ -42,7 +42,8 @@ namespace GainCapital.AutoUpdate.Tests
 		[TearDown]
 		public static void Uninit()
 		{
-			_nugetServer.Kill();
+            if (_nugetServer!=null)
+    		    _nugetServer.Kill();
 		}
 
 		static void InitTestApp()
@@ -93,14 +94,14 @@ namespace GainCapital.AutoUpdate.Tests
 		public static void Cleanup()
 		{
 			if (Directory.Exists(_currentAppPath))
-				Directory.Delete(_currentAppPath);
+				Directory.Delete(_currentAppPath, true);
 
 			foreach (var file in Directory.GetFiles(_packagesPath, "*.nupkg"))
 			{
 				File.Delete(file);
 			}
-
-			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg", SearchOption.AllDirectories))
+            
+			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg"))
 			{
 				File.Delete(file);
 			}
@@ -116,14 +117,12 @@ namespace GainCapital.AutoUpdate.Tests
 
 			var newVersion = BuildAndPublishUpdate(testExePath);
 
-			var testProcess = ProcessUtil.Execute(testExePath, null,
-				new Dictionary<string, string>
-				{
-					{ "NugetServerUrl", Settings.NugetUrl },
-					{ "UpdatePackageLevel", "Beta" },
-					{ "UpdateCheckingPeriod", "0:0:1" },
-				});
+            Environment.SetEnvironmentVariable("NugetServerUrl", Settings.NugetUrl, EnvironmentVariableTarget.Machine);
+            Environment.SetEnvironmentVariable("UpdatePackageLevel", "Beta", EnvironmentVariableTarget.Machine);
+            Environment.SetEnvironmentVariable("UpdateCheckingPeriod", "0:0:1", EnvironmentVariableTarget.Machine);
 
+			var testProcess = ProcessUtil.Execute(testExePath);
+            
 			WaitUpdateFinished();
 
 			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
@@ -139,10 +138,25 @@ namespace GainCapital.AutoUpdate.Tests
 			var versionText = FileVersionInfo.GetVersionInfo(testExePath).FileVersion;
 			var version = new Version(versionText);
 			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
-			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
-			var buildArgs = string.Format("{0} /t:Build /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\"", buildFilePath,
+            var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
+            var buildArgs = string.Format("{0} /t:Build /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\"", buildFilePath,
 				newVersion);
-			ProcessUtil.Execute("msbuild.exe", buildArgs);
+
+            var versionFile = Path.GetFullPath(Path.Combine(_binPath, @"..\src\DebugProject\Properties\AssemblyVersion.cs"));
+		    var oldVersionText = File.ReadAllText(versionFile);
+		    try
+		    {
+                File.WriteAllText(versionFile,
+                        string.Format("using System.Reflection;\n" +
+                                      "[assembly: AssemblyVersion(\"{0}\")]\n" +
+                                      "[assembly: AssemblyInformationalVersion(\"{0}\")]", newVersion));
+
+			    ProcessUtil.Execute(Path.Combine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory(), "msbuild.exe"), buildArgs);
+            }
+            finally
+		    {
+		        File.WriteAllText(versionFile, oldVersionText);
+		    }
 
 			var nugetPath = Path.GetFullPath(Path.Combine(_binPath, @"..\src\.nuget\nuget.exe"));
 

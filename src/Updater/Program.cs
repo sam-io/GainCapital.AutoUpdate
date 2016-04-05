@@ -3,19 +3,64 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
+using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
 namespace GainCapital.AutoUpdate.Updater
 {
+    public class ParentUpdater
+    {
+        public void CheckForUpdates()
+        {
+            try
+            {             
+                var parent = ParentProcess.GetParentProcess();
+                
+                var packageName = parent.ProcessName;
+
+                var updaterChecker = new UpdateChecker(
+                    parent,
+                    new UpdatingInfo()
+                    {
+                        NugetAppName = packageName,
+                        ServiceName = packageName,   
+                        ExeName = Path.GetFileName(parent.MainModule.FileName),                        
+                    });
+
+                updaterChecker.Start();                
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }            
+        }
+
+        public void CheckForUpdates(int prcId)
+        {
+            var parent = Process.GetProcessById(prcId);
+           
+        }
+    }
+
 	static class Program
 	{
 		static void Main(string[] args)
 		{
-			try
+            try
 			{
+			    if (args.Length == 0)
+			    {
+			        new ParentUpdater().CheckForUpdates();
+			        Console.ReadLine();
+                    Console.WriteLine("Shutdown");
+                    return;
+			    }
+                
 				if (args.Length != 5)
 					throw new ApplicationException("Invalid args: " + Environment.CommandLine);
 
@@ -47,7 +92,6 @@ namespace GainCapital.AutoUpdate.Updater
 
 				LogInfo(parentProcessId + " - finished successfully");
 
-				LogFile.Dispose();
 			}
 			catch (ApplicationException exc)
 			{
@@ -59,23 +103,25 @@ namespace GainCapital.AutoUpdate.Updater
 			}
 		}
 
-		static void Log(string message, string level)
+		public static void Log(string message, string level)
 		{
 			Trace.WriteLine(message);
 			Console.WriteLine(message);
 
-			try
-			{
-				if (LogFile == null)
-				{
-					var path = Path.Combine(Directory.GetCurrentDirectory(), "GainCapital.AutoUpdate.log");
-					LogFile = new StreamWriter(path, true);
-				}
+		    try
+		    {
+		        var updataDir = Path.Combine(Directory.GetCurrentDirectory(), @"..\UpdateData\");
+		        if (!Directory.Exists(updataDir))
+		            Directory.CreateDirectory(updataDir);
 
-				var line = string.Format("{{\"timestamp\":\"{0}\", \"level\":\"{1}\", \"Message\":\"{2}\"}}",
-					DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"), EscapeJsonVal(level), EscapeJsonVal(message));
-				LogFile.WriteLine(line);
-				LogFile.Flush();
+		        var path = Path.Combine(updataDir, "GainCapital.AutoUpdate.log");
+		        
+		        var line = string.Format("{{\"timestamp\":\"{0}\", \"level\":\"{1}\", \"Message\":\"{2}\"}}",
+		            DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"), EscapeJsonVal(level), EscapeJsonVal(message));
+
+
+		        File.AppendAllLines(path, new string[] {line})
+		    ;
 			}
 			catch (Exception exc)
 			{
@@ -103,19 +149,22 @@ namespace GainCapital.AutoUpdate.Updater
 		{
 			switch (appMode)
 			{
-				case AppMode.Console:
+				case AppMode.Console:                    
 					var processFilePath = Path.Combine(targetPath, startingName);
+                    LogInfo(string.Format("Starting process {0}", processFilePath));
 					Process.Start(processFilePath, "");
 					break;
 				case AppMode.Service:
+			        LogInfo(string.Format("Starting service {0}", startingName));
 					var service = new ServiceController(startingName);
 					service.Start();
+                    LogInfo(string.Format("Waiting for service {0} to start...", startingName));
+                    service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(10));
 					break;
 				default:
 					throw new ArgumentOutOfRangeException("appMode", appMode, null);
 			}
 		}
-
-		private static TextWriter LogFile;
+		
 	}
 }

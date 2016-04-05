@@ -17,7 +17,7 @@ namespace GainCapital.AutoUpdate.Tests
 			var startInfo = new ProcessStartInfo
 			{
 				FileName = appPath,
-				RedirectStandardOutput = true,
+			    RedirectStandardOutput = true,
 				RedirectStandardError = true,
 				UseShellExecute = false,
 			};

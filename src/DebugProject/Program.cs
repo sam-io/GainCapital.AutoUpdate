@@ -14,7 +14,7 @@ namespace GainCapital.AutoUpdate.DebugProject
 	{
 		static int Main(string[] args)
 		{
-			XmlConfigurator.Configure();
+            XmlConfigurator.Configure();
 
 			var exitCode = HostFactory.Run(x =>
 			{
