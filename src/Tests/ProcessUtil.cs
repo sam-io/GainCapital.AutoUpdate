@@ -52,7 +52,7 @@ namespace GainCapital.AutoUpdate.Tests
 				{
 					lock (result)
 					{
-						Console.WriteLine("[{0}] {1}", process.ProcessName, eventArgs.Data);
+						LogEvent(process.ProcessName, eventArgs.Data);
 						result.AppendLine(eventArgs.Data);
 					}
 				};
@@ -63,13 +63,19 @@ namespace GainCapital.AutoUpdate.Tests
 				{
 					lock (result)
 					{
-						Console.WriteLine("[{0}] {1}", process.ProcessName, eventArgs.Data);
+						LogEvent(process.ProcessName, eventArgs.Data);
 						result.AppendLine(eventArgs.Data);
 					}
 				};
 			process.BeginErrorReadLine();
 
 			return processInfo;
+		}
+
+		static void LogEvent(string processName, string val)
+		{
+			var line = string.Format("[{0} {1}] {2}", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"), processName, val);
+			Console.WriteLine(line);
 		}
 
 		public static Process Execute(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
