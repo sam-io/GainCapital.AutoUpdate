@@ -225,8 +225,8 @@ namespace GainCapital.AutoUpdate.Tests
 
 					return;
 				}
-
-				break;
+				else
+					return;
 			}
 
 			throw new ApplicationException();
