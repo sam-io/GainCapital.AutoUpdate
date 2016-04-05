@@ -10,7 +10,7 @@ namespace GainCapital.AutoUpdate.Tests
 {
 	static class ProcessUtil
 	{
-		public static Process Start(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
+		public static ProcessInfo Start(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
 		{
 			Console.WriteLine("> {0} {1}", appPath, args);
 
@@ -41,21 +41,18 @@ namespace GainCapital.AutoUpdate.Tests
 			};
 			process.Start();
 
-			return process;
-		}
-
-		public static Process Execute(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
-		{
-			var process = Start(appPath, args, envVars, curPath);
-
-			var result = new StringBuilder();
+			var processInfo = new ProcessInfo
+			{
+				Process = process,
+			};
+			var result = processInfo.Result;
 
 			process.OutputDataReceived +=
 				(sender, eventArgs) =>
 				{
 					lock (result)
 					{
-						Console.WriteLine(eventArgs.Data);
+						Console.WriteLine("[{0}] {1}", process.ProcessName, eventArgs.Data);
 						result.AppendLine(eventArgs.Data);
 					}
 				};
@@ -66,20 +63,29 @@ namespace GainCapital.AutoUpdate.Tests
 				{
 					lock (result)
 					{
-						Console.WriteLine(eventArgs.Data);
+						Console.WriteLine("[{0}] {1}", process.ProcessName, eventArgs.Data);
 						result.AppendLine(eventArgs.Data);
 					}
 				};
 			process.BeginErrorReadLine();
 
+			return processInfo;
+		}
+
+		public static Process Execute(string appPath, string args = null, Dictionary<string, string> envVars = null, string curPath = null)
+		{
+			var processInfo = Start(appPath, args, envVars, curPath);
+			var process = processInfo.Process;
+
 			if (!process.WaitForExit(60 * 1000))
 			{
+				process.CloseMainWindow();
 				process.Kill();
 				process.WaitForExit();
 			}
 
 			if (process.ExitCode != 0)
-				throw new ApplicationException(string.Format("Exit code: {0}\r\n", process.ExitCode) + result);
+				throw new ApplicationException(string.Format("Exit code: {0}\r\n", process.ExitCode) + processInfo.Result);
 
 			return process;
 		}

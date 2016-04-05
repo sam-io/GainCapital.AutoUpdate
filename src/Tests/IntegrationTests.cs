@@ -89,7 +89,7 @@ namespace GainCapital.AutoUpdate.Tests
 				ZipFile.ExtractToDirectory(packageFile, serverPath);
 			}
 
-			_nugetServer = ProcessUtil.Start(exeFile, Settings.KlondikeStarArgs);
+			_nugetServer = ProcessUtil.Start(exeFile, Settings.KlondikeStarArgs).Process;
 		}
 
 		public static void Cleanup()
