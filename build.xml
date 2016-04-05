@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="RunTests" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
 		<SourcePath>$(MSBuildProjectDirectory)\src\</SourcePath>
 		<NuGetExe>$(MSBuildProjectDirectory)\src\.nuget\nuget.exe</NuGetExe>
-		<NUnitCommand>$(MSBuildProjectDirectory)\tools\NUnit.ConsoleRunner\tools\nunit3-console.exe</NUnitCommand>
 	</PropertyGroup>
 	<Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 
@@ -40,11 +39,6 @@
 
 		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\DebugProject\DebugProject.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)"'
 			ContinueOnError='false'/>
-	</Target>
-
-	<Target Name="RunTests" DependsOnTargets="Package">
-		<Message Text="*** NUnit tests beginning..." />
-		<Exec Command="$(NUnitCommand) $(MSBuildProjectDirectory)\bin\GainCapital.AutoUpdate.Tests.dll -result=bin\TestResults.xml -out=bin\TestOutput.log"/>
 	</Target>
 
 </Project>
