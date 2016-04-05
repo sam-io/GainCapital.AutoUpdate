@@ -4,6 +4,7 @@
 	<PropertyGroup>
 		<SourcePath>$(MSBuildProjectDirectory)\src\</SourcePath>
 		<NuGetExe>$(MSBuildProjectDirectory)\src\.nuget\nuget.exe</NuGetExe>
+		<NUnitCommand>$(MSBuildProjectDirectory)\tools\NUnit.Runners.lite\nunit-console.exe</NUnitCommand>
 	</PropertyGroup>
 	<Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 
@@ -31,7 +32,12 @@
 		<VersionRestore CodePath="$(SourcePath)"/>
 	</Target>
 
-	<Target Name="Package" DependsOnTargets="Build">
+	<Target Name="RunTests" DependsOnTargets="Build">
+		<Message Text="*** NUnit tests beginning..." />
+		<Exec Command="$(NUnitCommand) $(MSBuildProjectDirectory)\bin\GainCapital.AutoUpdate.Tests.dll -result=bin\TestResults.xml -out=bin\TestOutput.log"/>
+	</Target>
+
+	<Target Name="Package" DependsOnTargets="RunTests">
 		<Message Text="Creating NuGet packages" />
 
 		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\GainCapital.AutoUpdate\GainCapital.AutoUpdate.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)" -IncludeReferencedProjects'
