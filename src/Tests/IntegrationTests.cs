@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using System.Xml;
 
 using NUnit.Framework;
 
@@ -180,13 +180,31 @@ namespace GainCapital.AutoUpdate.Tests
 			throw new ApplicationException();
 		}
 
+		static void SetConfigUpdateParams(string configName)
+		{
+			var config = new XmlDocument();
+			config.Load(configName);
+
+			SetAttribute(config, "NugetServerUrl", Settings.NugetUrl);
+			SetAttribute(config, "UpdatePackageLevel", Settings.UpdatePackageLevel);
+			SetAttribute(config, "UpdateCheckingPeriod", Settings.UpdateCheckingPeriod);
+
+			config.Save(configName);
+		}
+
+		static void SetAttribute(XmlDocument config, string attributeName, string val)
+		{
+			var query = string.Format("/configuration/appSettings/add[@key='{0}']/@value", attributeName);
+			config.SelectSingleNode(query).InnerText = val;
+		}
+
 		private const string TestAppExeName = "GainCapital.AutoUpdate.DebugProject.exe";
 
 		private static string _binPath;
 		private static string _stagingPath;
 		private static string _packagesPath;
 		private static string _currentAppPath;
-		static string _testExePath;
+		private static string _testExePath;
 
 		private static Process _nugetServer;
 	}
