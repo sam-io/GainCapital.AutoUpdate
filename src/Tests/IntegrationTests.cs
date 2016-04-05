@@ -63,6 +63,8 @@ namespace GainCapital.AutoUpdate.Tests
 			if (!JunctionPoint.Exists(_currentAppPath))
 				JunctionPoint.Create(_currentAppPath, appDeploymentPath);
 			Assert.That(Directory.Exists(_currentAppPath));
+
+			_testExePath = Path.Combine(_currentAppPath, TestAppExeName);
 		}
 
 		static void StartNugetServer()
@@ -112,11 +114,10 @@ namespace GainCapital.AutoUpdate.Tests
 		[Test]
 		public static void TestUpdatingOnce()
 		{
-			var testExePath = Path.Combine(_currentAppPath, TestAppExeName);
+			var newVersion = BuildAndPublishUpdate(_testExePath);
 
-			var newVersion = BuildAndPublishUpdate(testExePath);
 
-			var testProcess = ProcessUtil.Execute(testExePath, null,
+			var testProcess = ProcessUtil.Execute(_testExePath, null,
 				new Dictionary<string, string>
 				{
 					{ "NugetServerUrl", Settings.NugetUrl },
@@ -130,7 +131,7 @@ namespace GainCapital.AutoUpdate.Tests
 			var successMessage = string.Format("{0} - finished successfully", testProcess.Id);
 			Assert.That(updaterLog.Contains(successMessage));
 
-			var updatedVersion = new Version(FileVersionInfo.GetVersionInfo(testExePath).FileVersion);
+			var updatedVersion = new Version(FileVersionInfo.GetVersionInfo(_testExePath).FileVersion);
 			Assert.That(updatedVersion == newVersion);
 		}
 
@@ -185,6 +186,7 @@ namespace GainCapital.AutoUpdate.Tests
 		private static string _stagingPath;
 		private static string _packagesPath;
 		private static string _currentAppPath;
+		static string _testExePath;
 
 		private static Process _nugetServer;
 	}
