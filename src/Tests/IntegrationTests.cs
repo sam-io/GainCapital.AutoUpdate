@@ -157,9 +157,11 @@ namespace GainCapital.AutoUpdate.Tests
 				throw new NotSupportedException();
 
 			var newVersion = BuildAndPublishUpdate(_testExePath);
-			WaitUpdateFinished(mode);
 
-			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
+			var updaterLogPath = Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log");
+			WaitUpdateFinished(mode, updaterLogPath);
+
+			var updaterLog = File.ReadAllText(updaterLogPath);
 			var successMessage = " - finished successfully";
 			Assert.That(updaterLog.Contains(successMessage));
 
@@ -187,28 +189,47 @@ namespace GainCapital.AutoUpdate.Tests
 			return newVersion;
 		}
 
-		static void WaitUpdateFinished(AppMode mode)
+		static void WaitUpdateFinished(AppMode mode, string updateLogPath)
 		{
-			var testProcesses = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(TestAppExeName)).Where(
-				process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
-
-			if (testProcesses.Count > 1)
-				throw new ApplicationException();
-
-			if (testProcesses.Count == 1)
+			for (var i = 0; i < 60; i++)
 			{
-				var newTestApp = testProcesses.First();
+				Thread.Sleep(TimeSpan.FromSeconds(1));
 
-				if (!newTestApp.WaitForExit(5 * 1000))
+				if (!File.Exists(updateLogPath))
+					continue;
+
+				var updaterProcesses = Process.GetProcessesByName(UpdaterExeProcessName).Where(
+					process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
+				if (updaterProcesses.Count != 0)
+					continue;
+
+				var testProcesses = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(TestAppExeName)).Where(
+					process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
+
+				if (testProcesses.Count > 1)
+					throw new ApplicationException();
+
+				if (testProcesses.Count == 1)
 				{
-					if (mode == AppMode.Console)
-						newTestApp.Stop();
-					else if (mode == AppMode.Service)
-						ProcessUtil.Execute(_testExePath, "stop");
-					else
-						throw new NotSupportedException();
+					var newTestApp = testProcesses.First();
+
+					if (!newTestApp.WaitForExit(5 * 1000))
+					{
+						if (mode == AppMode.Console)
+							newTestApp.Stop();
+						else if (mode == AppMode.Service)
+							ProcessUtil.Execute(_testExePath, "stop");
+						else
+							throw new NotSupportedException();
+					}
+
+					return;
 				}
+
+				break;
 			}
+
+			throw new ApplicationException();
 		}
 
 		static void SetConfigUpdateParams(string configName)
@@ -230,6 +251,7 @@ namespace GainCapital.AutoUpdate.Tests
 		}
 
 		private const string TestAppExeName = "GainCapital.AutoUpdate.DebugProject.exe";
+		private const string UpdaterExeProcessName = "GainCapital.AutoUpdate.DebugProject";
 
 		private static string _binPath;
 		private static string _stagingPath;
