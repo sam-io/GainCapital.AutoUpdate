@@ -37,7 +37,8 @@ namespace GainCapital.AutoUpdate.Tests
 		[TearDown]
 		public static void Uninit()
 		{
-			_nugetServer.Kill();
+			if (_nugetServer != null)
+				_nugetServer.Stop(10);
 		}
 
 		static void InitTestApp()
@@ -153,27 +154,19 @@ namespace GainCapital.AutoUpdate.Tests
 
 		static void WaitUpdateFinished()
 		{
-			for (int i = 0; i < 10; i++)
+			var testProcesses = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(TestAppExeName));
+			var newTestApps = testProcesses.Where(process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
+
+			if (newTestApps.Count > 1)
+				throw new ApplicationException();
+
+			if (newTestApps.Count == 1)
 			{
-				var testProcesses = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(TestAppExeName));
-				var newTestApps = testProcesses.Where(process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
+				var newTestApp = newTestApps.First();
 
-				if (newTestApps.Count > 1)
-					throw new ApplicationException();
-
-				if (newTestApps.Count == 1)
-				{
-					var newTestApp = newTestApps.First();
-					newTestApp.Kill();
-					if (!newTestApp.WaitForExit(5 * 1000))
-						throw new ApplicationException();
-					return;
-				}
-
-				Thread.Sleep(TimeSpan.FromSeconds(5));
+				if (!newTestApp.WaitForExit(5 * 1000))
+					newTestApp.Stop();
 			}
-
-			throw new ApplicationException();
 		}
 
 		static void SetConfigUpdateParams(string configName)

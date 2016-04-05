@@ -78,11 +78,7 @@ namespace GainCapital.AutoUpdate.Tests
 			var process = processInfo.Process;
 
 			if (!process.WaitForExit(60 * 1000))
-			{
-				process.CloseMainWindow();
-				process.Kill();
-				process.WaitForExit();
-			}
+				process.Stop(1);
 
 			if (process.ExitCode != 0)
 				throw new ApplicationException(string.Format("Exit code: {0}\r\n", process.ExitCode) + processInfo.Result);
@@ -105,6 +101,15 @@ namespace GainCapital.AutoUpdate.Tests
 			}
 
 			return commandLine.ToString();
+		}
+
+		public static void Stop(this Process process, int timeoutSecs = 5)
+		{
+			// try to close the process gracefully
+			process.CloseMainWindow();
+
+			if (!process.WaitForExit(timeoutSecs * 1000))
+				process.Kill();
 		}
 	}
 }
