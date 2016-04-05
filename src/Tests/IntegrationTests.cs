@@ -132,8 +132,6 @@ namespace GainCapital.AutoUpdate.Tests
 
 		static void TestUpdatingOnce(AppMode mode)
 		{
-			var newVersion = BuildAndPublishUpdate(_testExePath);
-
 			if (mode == AppMode.Console)
 			{
 				ProcessUtil.Execute(_testExePath, null,
@@ -158,6 +156,7 @@ namespace GainCapital.AutoUpdate.Tests
 			else
 				throw new NotSupportedException();
 
+			var newVersion = BuildAndPublishUpdate(_testExePath);
 			WaitUpdateFinished(mode);
 
 			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
@@ -174,7 +173,7 @@ namespace GainCapital.AutoUpdate.Tests
 			var version = new Version(versionText);
 			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
 			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
-			var buildArgs = string.Format("{0} /t:Build /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\"", buildFilePath,
+			var buildArgs = string.Format("{0} /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\"", buildFilePath,
 				newVersion);
 			ProcessUtil.Execute("msbuild.exe", buildArgs);
 
