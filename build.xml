@@ -4,7 +4,7 @@
 	<PropertyGroup>
 		<SourcePath>$(MSBuildProjectDirectory)\src\</SourcePath>
 		<NuGetExe>$(MSBuildProjectDirectory)\src\.nuget\nuget.exe</NuGetExe>
-		<NUnitCommand>$(MSBuildProjectDirectory)\tools\NUnit.Runners.lite\nunit-console.exe</NUnitCommand>
+		<NUnitCommand>$(MSBuildProjectDirectory)\tools\NUnit.ConsoleRunner\tools\nunit3-console.exe</NUnitCommand>
 	</PropertyGroup>
 	<Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 

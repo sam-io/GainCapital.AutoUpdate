@@ -12,7 +12,7 @@
 		<Exec Command="$(NuGetCommand) install GainCapital.MsBuildVersionOverride -Version 1.0.0.24928 -OutputDirectory tools -ExcludeVersion"/>
 
 		<Message Text="Installing NUnit runners" />
-		<Exec Command="$(NuGetCommand) install nunit.runners.lite -Version 2.6.4.20150512 -OutputDirectory tools -ExcludeVersion"/>
+		<Exec Command="$(NuGetCommand) install NUnit.Runners -Version 3.2.0 -OutputDirectory tools -ExcludeVersion"/>
 
 	</Target>
 </Project>
