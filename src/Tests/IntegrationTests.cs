@@ -251,7 +251,7 @@ namespace GainCapital.AutoUpdate.Tests
 		}
 
 		private const string TestAppExeName = "GainCapital.AutoUpdate.DebugProject.exe";
-		private const string UpdaterExeProcessName = "GainCapital.AutoUpdate.DebugProject";
+		private const string UpdaterExeProcessName = "GainCapital.Updater";
 
 		private static string _binPath;
 		private static string _stagingPath;
