@@ -23,11 +23,6 @@ namespace GainCapital.AutoUpdate.Tests
 		{
 			_binPath = TestContext.CurrentContext.TestDirectory;
 			_stagingPath = Path.Combine(_binPath, "TestStaging");
-
-			_packagesPath = Path.GetFullPath(Path.Combine(_binPath, @"..\src\Tests.Server\Packages"));
-			if (!Directory.Exists(_packagesPath))
-				throw new ApplicationException();
-
 			_currentAppPath = Path.Combine(_stagingPath, "current");
 
 			Cleanup();
@@ -89,6 +84,12 @@ namespace GainCapital.AutoUpdate.Tests
 				ZipFile.ExtractToDirectory(packageFile, serverPath);
 			}
 
+			var serverDataPath = Path.GetFullPath(Path.Combine(serverPath, "App_Data"));
+			foreach (var file in Directory.GetFiles(serverDataPath, "*.*", SearchOption.AllDirectories))
+			{
+				File.Delete(file);
+			}
+
 			_nugetServer = ProcessUtil.Start(exeFile, Settings.KlondikeStarArgs).Process;
 		}
 
@@ -96,11 +97,6 @@ namespace GainCapital.AutoUpdate.Tests
 		{
 			if (Directory.Exists(_currentAppPath))
 				Directory.Delete(_currentAppPath);
-
-			foreach (var file in Directory.GetFiles(_packagesPath, "*.nupkg"))
-			{
-				File.Delete(file);
-			}
 
 			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg", SearchOption.AllDirectories))
 			{
@@ -202,7 +198,6 @@ namespace GainCapital.AutoUpdate.Tests
 
 		private static string _binPath;
 		private static string _stagingPath;
-		private static string _packagesPath;
 		private static string _currentAppPath;
 		private static string _testExePath;
 
