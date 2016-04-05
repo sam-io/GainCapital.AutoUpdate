@@ -134,7 +134,7 @@ namespace GainCapital.AutoUpdate.Tests
 		{
 			if (mode == AppMode.Console)
 			{
-				ProcessUtil.Execute(_testExePath, null,
+				ProcessUtil.Start(_testExePath, null,
 					new Dictionary<string, string>
 					{
 						{ "NugetServerUrl", Settings.NugetUrl },
