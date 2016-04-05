@@ -121,8 +121,8 @@ namespace GainCapital.AutoUpdate.Tests
 				new Dictionary<string, string>
 				{
 					{ "NugetServerUrl", Settings.NugetUrl },
-					{ "UpdatePackageLevel", "Beta" },
-					{ "UpdateCheckingPeriod", "0:0:1" },
+					{ "UpdatePackageLevel", Settings.UpdatePackageLevel },
+					{ "UpdateCheckingPeriod", Settings.UpdateCheckingPeriod },
 				});
 
 			WaitUpdateFinished();

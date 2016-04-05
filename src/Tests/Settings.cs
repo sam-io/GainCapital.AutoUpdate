@@ -11,5 +11,7 @@ namespace GainCapital.AutoUpdate.Tests
 		public const string KlondikeStarArgs = "--port=49361";
 
 		public const string NugetUrl = "http://localhost:49361/api/";
+		public const string UpdatePackageLevel = "Beta";
+		public const string UpdateCheckingPeriod = "0:0:1";
 	}
 }
