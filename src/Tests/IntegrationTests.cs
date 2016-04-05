@@ -189,15 +189,15 @@ namespace GainCapital.AutoUpdate.Tests
 
 		static void WaitUpdateFinished(AppMode mode)
 		{
-			var testProcesses = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(TestAppExeName));
-			var newTestApps = testProcesses.Where(process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
+			var testProcesses = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(TestAppExeName)).Where(
+				process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
 
-			if (newTestApps.Count > 1)
+			if (testProcesses.Count > 1)
 				throw new ApplicationException();
 
-			if (newTestApps.Count == 1)
+			if (testProcesses.Count == 1)
 			{
-				var newTestApp = newTestApps.First();
+				var newTestApp = testProcesses.First();
 
 				if (!newTestApp.WaitForExit(5 * 1000))
 				{
