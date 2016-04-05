@@ -81,7 +81,7 @@ namespace GainCapital.AutoUpdate.Tests
 				process.Stop(1);
 
 			if (process.ExitCode != 0)
-				throw new ApplicationException(string.Format("Exit code: {0}\r\n", process.ExitCode) + processInfo.Result);
+				throw new ApplicationException(Delimiter + string.Format("Exit code: {0}\r\n", process.ExitCode) + processInfo.Result + Delimiter);
 
 			return process;
 		}
@@ -111,5 +111,7 @@ namespace GainCapital.AutoUpdate.Tests
 			if (!process.WaitForExit(timeoutSecs * 1000))
 				process.Kill();
 		}
+
+		static readonly string Delimiter = new string('=', 80) + "\r\n";
 	}
 }
