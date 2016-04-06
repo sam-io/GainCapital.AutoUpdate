@@ -95,6 +95,7 @@ namespace GainCapital.AutoUpdate.Tests
 				}
 
 				ZipFile.ExtractToDirectory(packageFile, serverPath);
+				File.Delete(packageFile);
 			}
 
 			var serverDataPath = Path.GetFullPath(Path.Combine(serverPath, "App_Data"));
