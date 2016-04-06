@@ -96,6 +96,8 @@ namespace GainCapital.AutoUpdate.Tests
 
 				ZipFile.ExtractToDirectory(packageFile, serverPath);
 				File.Delete(packageFile);
+
+				ConfigureNugetServer(serverPath);
 			}
 
 			var serverDataPath = Path.GetFullPath(Path.Combine(serverPath, "App_Data"));
@@ -108,6 +110,15 @@ namespace GainCapital.AutoUpdate.Tests
 			}
 
 			_nugetServer = ProcessUtil.Start(exeFile, Settings.KlondikeStarArgs).Process;
+		}
+
+		static void ConfigureNugetServer(string serverPath)
+		{
+			var configPath = Path.Combine(serverPath, "Settings.config");
+			var config = new XmlDocument();
+			config.Load(configPath);
+			config.SelectSingleNode("/appSettings/add[@key='packageMirrorTargetUrl']/@value").InnerText = "";
+			config.Save(configPath);
 		}
 
 		public static void Cleanup()
