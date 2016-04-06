@@ -59,12 +59,12 @@ namespace GainCapital.AutoUpdate.Tests
 			if (_nugetServer != null)
 				_nugetServer.Stop(10);
 
-			foreach (var process in FindProcesses(UpdaterExeProcessName, _currentAppPath))
+			foreach (var process in FindProcesses(UpdaterExeProcessName, _stagingPath))
 			{
 				process.Kill();
 			}
 
-			foreach (var process in FindProcesses(Path.GetFileNameWithoutExtension(TestAppExeName), _currentAppPath))
+			foreach (var process in FindProcesses(Path.GetFileNameWithoutExtension(TestAppExeName), _stagingPath))
 			{
 				process.Kill();
 			}
@@ -241,11 +241,11 @@ namespace GainCapital.AutoUpdate.Tests
 				if (!File.Exists(updateLogPath))
 					continue;
 
-				var updaterProcesses = FindProcesses(UpdaterExeProcessName, _currentAppPath);
+				var updaterProcesses = FindProcesses(UpdaterExeProcessName, _stagingPath);
 				if (updaterProcesses.Count != 0)
 					continue;
 
-				var testProcesses = FindProcesses(Path.GetFileNameWithoutExtension(TestAppExeName), _currentAppPath);
+				var testProcesses = FindProcesses(Path.GetFileNameWithoutExtension(TestAppExeName), _stagingPath);
 				if (testProcesses.Count > 1)
 					throw new ApplicationException();
 
@@ -279,7 +279,7 @@ namespace GainCapital.AutoUpdate.Tests
 				{
 					try
 					{
-						return process.GetCommandLine().StartsWith(workingPath);
+						return process.GetCommandLine().StartsWith(workingPath, StringComparison.OrdinalIgnoreCase);
 					}
 					catch (Exception exc)
 					{
