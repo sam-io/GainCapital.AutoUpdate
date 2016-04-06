@@ -21,7 +21,11 @@ namespace GainCapital.AutoUpdate.Tests
 		[SetUp]
 		public static void Init()
 		{
+			Console.WriteLine("Init()");
+
 			_binPath = TestContext.CurrentContext.TestDirectory;
+			Console.WriteLine("Running tests in: {0}", _binPath);
+
 			_testBinPath = Path.Combine(_binPath, "TestBin");
 			Directory.CreateDirectory(_testBinPath);
 
@@ -40,6 +44,8 @@ namespace GainCapital.AutoUpdate.Tests
 		[TearDown]
 		public static void Uninit()
 		{
+			Console.WriteLine("Uninit()");
+
 			try
 			{
 				if (_serviceInstalled)
