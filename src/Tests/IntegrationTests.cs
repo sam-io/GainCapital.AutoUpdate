@@ -22,6 +22,9 @@ namespace GainCapital.AutoUpdate.Tests
 		public static void Init()
 		{
 			_binPath = TestContext.CurrentContext.TestDirectory;
+			_testBinPath = Path.Combine(_binPath, "TestBin");
+			Directory.CreateDirectory(_testBinPath);
+
 			_stagingPath = Path.Combine(_binPath, "TestStaging");
 			_currentAppPath = Path.Combine(_stagingPath, "current");
 
@@ -109,7 +112,7 @@ namespace GainCapital.AutoUpdate.Tests
 			if (Directory.Exists(_currentAppPath))
 				Directory.Delete(_currentAppPath);
 
-			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg", SearchOption.AllDirectories))
+			foreach (var file in Directory.GetFiles(_testBinPath, "*.nupkg", SearchOption.AllDirectories))
 			{
 				File.Delete(file);
 			}
@@ -185,13 +188,13 @@ namespace GainCapital.AutoUpdate.Tests
 			var version = new Version(versionText);
 			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
 			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
-			var buildArgs = string.Format("{0} /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\"", buildFilePath,
-				newVersion);
+			var buildArgs = string.Format("{0} /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\" /p:OutputPath=\"{2}\"",
+				buildFilePath, newVersion, _testBinPath);
 			ProcessUtil.Execute("msbuild.exe", buildArgs);
 
 			var nugetPath = Path.GetFullPath(Path.Combine(_binPath, @"..\src\.nuget\nuget.exe"));
 
-			foreach (var file in Directory.GetFiles(_binPath, "*.nupkg"))
+			foreach (var file in Directory.GetFiles(_testBinPath, "*.nupkg"))
 			{
 				ProcessUtil.Execute(nugetPath, string.Format("push {0} -Source {1}", file, Settings.NugetUrl));
 			}
@@ -264,8 +267,10 @@ namespace GainCapital.AutoUpdate.Tests
 		private const string UpdaterExeProcessName = "GainCapital.Updater";
 
 		private static string _binPath;
+		private static string _testBinPath;
 		private static string _stagingPath;
 		private static string _currentAppPath;
+
 		private static string _testExePath;
 
 		private static Process _nugetServer;
