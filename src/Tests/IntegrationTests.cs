@@ -56,14 +56,13 @@ namespace GainCapital.AutoUpdate.Tests
 
 		static void InitTestApp()
 		{
-			var testAppPath = Path.Combine(_binPath, "DebugApp");
-			var testAppAssemblyPath = Path.Combine(_binPath, "DebugApp", TestAppExeName);
+			var testAppAssemblyPath = Path.Combine(_binPath, TestAppExeName);
 
 			var versionText = FileVersionInfo.GetVersionInfo(testAppAssemblyPath).FileVersion;
 			var appDeploymentPath = Path.Combine(_stagingPath, "v" + versionText);
 			Directory.CreateDirectory(appDeploymentPath);
 
-			foreach (var file in Directory.GetFiles(testAppPath))
+			foreach (var file in Directory.GetFiles(_binPath))
 			{
 				var targetFile = Path.Combine(appDeploymentPath, Path.GetFileName(file));
 				File.Copy(file, targetFile);
