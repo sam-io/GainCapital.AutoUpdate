@@ -225,14 +225,11 @@ namespace GainCapital.AutoUpdate.Tests
 				if (!File.Exists(updateLogPath))
 					continue;
 
-				var updaterProcesses = Process.GetProcessesByName(UpdaterExeProcessName).Where(
-					process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
+				var updaterProcesses = FindProcesses(UpdaterExeProcessName, _currentAppPath);
 				if (updaterProcesses.Count != 0)
 					continue;
 
-				var testProcesses = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(TestAppExeName)).Where(
-					process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
-
+				var testProcesses = FindProcesses(Path.GetFileNameWithoutExtension(TestAppExeName), _currentAppPath);
 				if (testProcesses.Count > 1)
 					throw new ApplicationException();
 
@@ -257,6 +254,24 @@ namespace GainCapital.AutoUpdate.Tests
 			}
 
 			throw new ApplicationException();
+		}
+
+		static List<Process> FindProcesses(string appName, string workingPath)
+		{
+			var res = Process.GetProcessesByName(appName).Where(
+				process =>
+				{
+					try
+					{
+						return process.GetCommandLine().StartsWith(workingPath);
+					}
+					catch (Exception exc)
+					{
+						Console.WriteLine(exc);
+						return false;
+					}
+				}).ToList();
+			return res;
 		}
 
 		static void SetConfigUpdateParams(string configName)
