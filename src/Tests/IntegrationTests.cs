@@ -99,9 +99,12 @@ namespace GainCapital.AutoUpdate.Tests
 			}
 
 			var serverDataPath = Path.GetFullPath(Path.Combine(serverPath, "App_Data"));
-			foreach (var file in Directory.GetFiles(serverDataPath, "*.*", SearchOption.AllDirectories))
+			if (Directory.Exists(serverDataPath))
 			{
-				File.Delete(file);
+				foreach (var file in Directory.GetFiles(serverDataPath, "*.*", SearchOption.AllDirectories))
+				{
+					File.Delete(file);
+				}
 			}
 
 			_nugetServer = ProcessUtil.Start(exeFile, Settings.KlondikeStarArgs).Process;
