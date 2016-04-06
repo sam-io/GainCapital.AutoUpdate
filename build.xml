@@ -34,10 +34,10 @@
 	<Target Name="Package" DependsOnTargets="Build">
 		<Message Text="Creating NuGet packages" />
 
-		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\GainCapital.AutoUpdate\GainCapital.AutoUpdate.csproj -BasePath "$(OutputPath)" -OutputDirectory "$(OutputPath)" -Version "$(SemVersion)" -IncludeReferencedProjects'
+		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\GainCapital.AutoUpdate\GainCapital.AutoUpdate.csproj -BasePath "$(OutputPath)" -Properties "Configuration=$(Configuration);Platform=$(Platform);OutDir=$(OutputPath)" -OutputDirectory "$(OutputPath)" -Version "$(SemVersion)" -IncludeReferencedProjects'
 			ContinueOnError='false'/>
 
-		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\DebugProject\DebugProject.csproj -BasePath "$(OutputPath)" -OutputDirectory "$(OutputPath)" -Version "$(SemVersion)"'
+		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\DebugProject\DebugProject.csproj -BasePath "$(OutputPath)" -Properties "Configuration=$(Configuration);Platform=$(Platform);OutDir=$(OutputPath)" -OutputDirectory "$(OutputPath)" -Version "$(SemVersion)"'
 			ContinueOnError='false'/>
 	</Target>
 
