@@ -7,7 +7,7 @@
 
 	<Target Name="RunTests">
 		<Message Text="*** NUnit tests beginning..." />
-		<Exec Command="$(NUnitCommand) $(MSBuildProjectDirectory)\bin\GainCapital.AutoUpdate.Tests.dll -result=bin\TestResults.xml -out=bin\TestOutput.log"/>
+		<Exec Command="$(NUnitCommand) $(MSBuildProjectDirectory)\bin\GainCapital.AutoUpdate.Tests.dll -result=bin\TestResults.xml"/>
 	</Target>
 
 </Project>
