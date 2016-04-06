@@ -19,6 +19,7 @@
 	<PropertyGroup>
 		<Configuration>Release</Configuration>
 		<Platform>Any CPU</Platform>
+		<OutputPath>$(MSBuildProjectDirectory)\bin</OutputPath>
 	</PropertyGroup>
 
 	<Target Name="Build">
@@ -33,10 +34,10 @@
 	<Target Name="Package" DependsOnTargets="Build">
 		<Message Text="Creating NuGet packages" />
 
-		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\GainCapital.AutoUpdate\GainCapital.AutoUpdate.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)" -IncludeReferencedProjects'
+		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\GainCapital.AutoUpdate\GainCapital.AutoUpdate.csproj -OutputDirectory "$(OutputPath)" -Version "$(SemVersion)" -IncludeReferencedProjects'
 			ContinueOnError='false'/>
 
-		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\DebugProject\DebugProject.csproj -OutputDirectory "$(MSBuildProjectDirectory)\bin" -Version "$(SemVersion)"'
+		<Exec Command='"$(NuGetExe)" pack $(MSBuildProjectDirectory)\src\DebugProject\DebugProject.csproj -OutputDirectory "$(OutputPath)" -Version "$(SemVersion)"'
 			ContinueOnError='false'/>
 	</Target>
 
