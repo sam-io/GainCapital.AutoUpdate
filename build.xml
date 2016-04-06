@@ -5,7 +5,7 @@
 		<SourcePath>$(MSBuildProjectDirectory)\src\</SourcePath>
 		<NuGetExe>$(MSBuildProjectDirectory)\src\.nuget\nuget.exe</NuGetExe>
 	</PropertyGroup>
-	<Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+	<Import Project="$(SourcePath)\.nuget\NuGet.targets" Condition="Exists('$(SourcePath)\.nuget\NuGet.targets')" />
 
 	<Import Project="$(MSBuildProjectDirectory)\tools\GainCapital.MsBuildVersionOverride\lib\net45\GainCapital.MsBuildVersionOverride.Targets" />
 
@@ -19,7 +19,6 @@
 	<PropertyGroup>
 		<Configuration>Release</Configuration>
 		<Platform>Any CPU</Platform>
-		<SolutionDir>src\</SolutionDir>
 	</PropertyGroup>
 
 	<Target Name="Build">
