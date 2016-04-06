@@ -54,7 +54,7 @@ namespace GainCapital.AutoUpdate
 
 			_repository = PackageRepositoryFactory.Default.CreateRepository(UpdateUrl);
             
-            LogInfo("Starting check thead");
+            LogInfo("Starting check thread");
 			_thread.Start();
 
 			
@@ -189,6 +189,8 @@ namespace GainCapital.AutoUpdate
             {
                 FileName = Assembly.GetExecutingAssembly().Location,
                 Arguments = args,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
             });
 
 		    if (appMode == AppMode.Console)

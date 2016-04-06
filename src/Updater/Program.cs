@@ -55,9 +55,19 @@ namespace GainCapital.AutoUpdate.Updater
 			{
 			    if (args.Length == 0)
 			    {
+                    var wait = new ManualResetEvent(false);
+                    Console.CancelKeyPress += (sender, eventArgs) =>
+                    {
+                        LogInfo("Close event captured");
+                        eventArgs.Cancel = true;
+                        wait.Set();
+                    };
+
 			        new ParentUpdater().CheckForUpdates();
-			        Console.ReadLine();
-                    Console.WriteLine("Shutdown");
+
+                    LogInfo("Waiting for close event...");
+			        wait.WaitOne();
+                    LogInfo("Shutdown");
                     return;
 			    }
                 
@@ -119,9 +129,18 @@ namespace GainCapital.AutoUpdate.Updater
 		        var line = string.Format("{{\"timestamp\":\"{0}\", \"level\":\"{1}\", \"Message\":\"{2}\"}}",
 		            DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"), EscapeJsonVal(level), EscapeJsonVal(message));
 
-
-		        File.AppendAllLines(path, new string[] {line})
-		    ;
+                for(var i=1;i<=10;i++)
+		        {
+		            try
+		            {
+		                File.AppendAllLines(path, new string[] {line});
+		                break;
+		            }
+		            catch (IOException)
+		            {
+		                Thread.Sleep(i);
+		            }
+		        }
 			}
 			catch (Exception exc)
 			{

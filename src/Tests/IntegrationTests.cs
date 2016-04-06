@@ -25,8 +25,8 @@ namespace GainCapital.AutoUpdate.Tests
 			_stagingPath = Path.Combine(_binPath, "TestStaging");
 
 			_packagesPath = Path.GetFullPath(Path.Combine(_binPath, @"..\src\Tests.Server\Packages"));
-			if (!Directory.Exists(_packagesPath))
-				throw new ApplicationException();
+		    if (!Directory.Exists(_packagesPath))
+		        Directory.CreateDirectory(_packagesPath);
 
 			_currentAppPath = Path.Combine(_stagingPath, "current");
 
@@ -130,7 +130,7 @@ namespace GainCapital.AutoUpdate.Tests
 			Assert.That(updaterLog.Contains(successMessage));
 
 			var updatedVersion = new Version(FileVersionInfo.GetVersionInfo(testExePath).FileVersion);
-			Assert.That(updatedVersion == newVersion);
+			Assert.That(updatedVersion,Is.EqualTo(newVersion));
 		}
 
 		static Version BuildAndPublishUpdate(string testExePath)
@@ -181,7 +181,7 @@ namespace GainCapital.AutoUpdate.Tests
 				if (newTestApps.Count == 1)
 				{
 					var newTestApp = newTestApps.First();
-					newTestApp.Kill();
+				    newTestApp.CloseMainWindow();
 					if (!newTestApp.WaitForExit(5 * 1000))
 						throw new ApplicationException();
 					return;

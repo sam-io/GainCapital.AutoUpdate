@@ -10,7 +10,6 @@
     <licenseUrl>https://github.com/cityindex/GainCapital.AutoUpdate/LICENSE</licenseUrl>
   </metadata>
   <files>
-    <file src="..\..\bin\DebugApp\GainCapital.AutoUpdate.dll" target="lib\net45\"/>
     <file src="..\..\bin\DebugApp\GainCapital.Updater.exe" target="lib\net45\"/>
     <file src="..\..\bin\DebugApp\log4net.dll" target="lib\net45\"/>
     <file src="..\..\bin\DebugApp\Microsoft.Web.XmlTransform.dll" target="lib\net45\"/>
