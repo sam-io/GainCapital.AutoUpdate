@@ -52,6 +52,16 @@ namespace GainCapital.AutoUpdate.Tests
 
 			if (_nugetServer != null)
 				_nugetServer.Stop(10);
+
+			foreach (var process in FindProcesses(UpdaterExeProcessName, _currentAppPath))
+			{
+				process.Kill();
+			}
+
+			foreach (var process in FindProcesses(Path.GetFileNameWithoutExtension(TestAppExeName), _currentAppPath))
+			{
+				process.Kill();
+			}
 		}
 
 		static void InitTestApp()
