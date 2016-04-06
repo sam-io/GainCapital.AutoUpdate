@@ -220,7 +220,7 @@ namespace GainCapital.AutoUpdate.Tests
 			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
 			var buildArgs = string.Format("{0} /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\" /p:OutputPath=\"{2}\"",
 				buildFilePath, newVersion, _testBinPath);
-			ProcessUtil.Execute("msbuild.exe", buildArgs);
+			ProcessUtil.Execute(Path.Combine(Settings.MsbuildPath, "msbuild.exe"), buildArgs);
 
 			var nugetPath = Path.GetFullPath(Path.Combine(_binPath, @"..\src\.nuget\nuget.exe"));
 
