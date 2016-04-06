@@ -19,6 +19,7 @@ namespace GainCapital.AutoUpdate.Tests
 				FileName = appPath,
 				RedirectStandardOutput = true,
 				RedirectStandardError = true,
+				RedirectStandardInput = true,
 				UseShellExecute = false,
 			};
 
