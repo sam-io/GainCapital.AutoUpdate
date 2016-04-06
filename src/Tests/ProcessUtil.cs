@@ -47,12 +47,14 @@ namespace GainCapital.AutoUpdate.Tests
 			};
 			var result = processInfo.Result;
 
+			var processName = process.ProcessName;
+
 			process.OutputDataReceived +=
 				(sender, eventArgs) =>
 				{
 					lock (result)
 					{
-						LogEvent(process.ProcessName, eventArgs.Data);
+						LogEvent(processName, eventArgs.Data);
 						result.AppendLine(eventArgs.Data);
 					}
 				};
@@ -63,7 +65,7 @@ namespace GainCapital.AutoUpdate.Tests
 				{
 					lock (result)
 					{
-						LogEvent(process.ProcessName, eventArgs.Data);
+						LogEvent(processName, eventArgs.Data);
 						result.AppendLine(eventArgs.Data);
 					}
 				};
