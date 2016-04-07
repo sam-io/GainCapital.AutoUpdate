@@ -17,22 +17,31 @@ namespace GainCapital.AutoUpdate.Updater
         }
 
         public static FileSystem FromDirectory(string directory)
-        {
+        {            
             return new FileSystem(Enumerable.Empty<FileSystemInfo>(), directory);
         }
 
         public FileSystem IncludeFiles(string searchPattern)
         {
+            if (!Directory.Exists(_rootDirectory))
+                return this;
+
             return new FileSystem(_allFiles.Union(Directory.GetFiles(_rootDirectory, searchPattern).Select(d => new FileInfo(d))), _rootDirectory);
         }
 
         public FileSystem IncludeFilesRecursive(string searchPattern)
         {
+            if (!Directory.Exists(_rootDirectory))
+                return this;
+
             return new FileSystem(_allFiles.Union(Directory.GetFiles(_rootDirectory, searchPattern, SearchOption.AllDirectories).Select(d => new FileInfo(d))), _rootDirectory);
         }
 
         public FileSystem IncludeDirectoriesRecursive(string searchPattern)
         {
+            if (!Directory.Exists(_rootDirectory))
+                return this;
+
             return new FileSystem(_allFiles.Union(Directory.GetDirectories(_rootDirectory, searchPattern, SearchOption.AllDirectories).Select(d => new DirectoryInfo(d))), _rootDirectory);
         }
 

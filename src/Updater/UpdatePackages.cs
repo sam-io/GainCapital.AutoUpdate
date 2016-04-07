@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using NuGet;
 
 namespace GainCapital.AutoUpdate.Updater
@@ -55,6 +56,15 @@ namespace GainCapital.AutoUpdate.Updater
                 .IncludeFilesRecursive("*.dll")
                 .IncludeFilesRecursive("*.pdb")
                 .IncludeFilesRecursive("*.xml")
+                .Flatten(updateDeploymentPath);
+
+            var environmentType = Environment.GetEnvironmentVariable("EnvironmentName");
+            if (string.IsNullOrEmpty(environmentType))
+                environmentType = "local";
+
+            var configPath = Path.Combine(packagePath, @"content\net45\Config", environmentType, "Apps", package.Title);
+            FileSystem.FromDirectory(configPath)
+                .IncludeFiles("*.config")
                 .Flatten(updateDeploymentPath);
 
             return updateDeploymentPath;
