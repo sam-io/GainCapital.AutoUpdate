@@ -1,62 +1,102 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Management;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace GainCapital.AutoUpdate.Updater
 {
-    /// <summary>
-    /// A utility class to determine a process parent.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct ParentProcess
+    public abstract class ParentProcess
     {
-        // These members must match PROCESS_BASIC_INFORMATION
-        internal IntPtr Reserved1;
-        internal IntPtr PebBaseAddress;
-        internal IntPtr Reserved2_0;
-        internal IntPtr Reserved2_1;
-        internal IntPtr UniqueProcessId;
-        internal IntPtr InheritedFromUniqueProcessId;
+        [StructLayout(LayoutKind.Sequential)]
+        private struct ParentProcessInfo
+        {
+            public IntPtr Reserved1;
+            public IntPtr PebBaseAddress;
+            public IntPtr Reserved2_0;
+            public IntPtr Reserved2_1;
+            public IntPtr UniqueProcessId;
+            public IntPtr InheritedFromUniqueProcessId;
+        }
+
+        private readonly int _processId;
+        private readonly string _fullName;
+        
+        public string Location
+        {
+            get{ return Path.GetDirectoryName(_fullName); }
+        }
+
+        protected string FullName
+        {
+            get { return _fullName; }
+        }
+
+        public Version Version
+        {
+            get { return new Version(FileVersionInfo.GetVersionInfo(_fullName).FileVersion); }
+        }
+
+        public string FileName
+        {
+            get { return Path.GetFileName(_fullName); }
+        }
+
+        public int ProcessId
+        {
+            get { return _processId; }
+        }
 
         [DllImport("ntdll.dll")]
-        private static extern int NtQueryInformationProcess(IntPtr processHandle, int processInformationClass, ref ParentProcess processInformation, int processInformationLength, out int returnLength);
+        private static extern int NtQueryInformationProcess(IntPtr processHandle, int processInformationClass, ref ParentProcessInfo processInformation, int processInformationLength, out int returnLength);
 
-        /// <summary>
-        /// Gets the parent process of the current process.
-        /// </summary>
-        /// <returns>An instance of the Process class.</returns>
-        public static Process GetParentProcess()
+        public static ParentProcess GetParentProcess()
         {
             return GetParentProcess(Process.GetCurrentProcess().Handle);
         }
 
-        /// <summary>
-        /// Gets the parent process of specified process.
-        /// </summary>
-        /// <param name="id">The process id.</param>
-        /// <returns>An instance of the Process class.</returns>
-        public static Process GetParentProcess(int id)
+        public static ParentProcess FromCommandLine(string[] args, int startIndex)
         {
-            Process process = Process.GetProcessById(id);
-            return GetParentProcess(process.Handle);
+            var processTypeName = args[startIndex];
+            var processType = typeof(ParentProcess).Assembly
+                    .GetTypes()
+                    .Where(t => t.IsSubclassOf(typeof (ParentProcess)))
+                    .FirstOrDefault(t => t.Name == processTypeName);
+
+            return (ParentProcess)processType
+                    .GetMethod("FromCommandLine", BindingFlags.Static | BindingFlags.Public)
+                    .Invoke(null, new object[]{args, startIndex+1});
+            }
+
+        private static string GetService(int processId)
+        {
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(
+                "SELECT * FROM Win32_Service WHERE ProcessId =" + "\"" + processId + "\""))
+            {
+                foreach (ManagementObject service in searcher.Get())
+                    return (string)service["Name"];
+            }
+            return null;
         }
 
-        /// <summary>
-        /// Gets the parent process of a specified process.
-        /// </summary>
-        /// <param name="handle">The process handle.</param>
-        /// <returns>An instance of the Process class or null if an error occurred.</returns>
-        public static Process GetParentProcess(IntPtr handle)
+        private static ParentProcess GetParentProcess(IntPtr handle)
         {
-            ParentProcess pbi = new ParentProcess();
+            var pbi = new ParentProcessInfo();
             int returnLength;
-            int status = NtQueryInformationProcess(handle, 0, ref pbi, Marshal.SizeOf(pbi), out returnLength);
+            var status = NtQueryInformationProcess(handle, 0, ref pbi, Marshal.SizeOf(pbi), out returnLength);
             if (status != 0)
                 return null;
-
             try
             {
-                return Process.GetProcessById(pbi.InheritedFromUniqueProcessId.ToInt32());
+                var processId = pbi.InheritedFromUniqueProcessId.ToInt32();
+                var serviceName = GetService(processId);
+
+                if(!string.IsNullOrEmpty(serviceName))
+                    return new ServiceProcess(processId, serviceName, Process.GetProcessById(processId).MainModule.FileName);
+
+                return new ConsoleProcess(processId, Process.GetProcessById(processId).MainModule.FileName);
             }
             catch (ArgumentException)
             {
@@ -64,5 +104,41 @@ namespace GainCapital.AutoUpdate.Updater
                 return null;
             }
         }
+
+        protected ParentProcess(int processId, string fullName)
+        {
+            _processId = processId;
+            _fullName = fullName;            
+        }
+
+        public bool IsRunning
+        {
+            get { return Process.GetProcesses().Any(p => p.Id == _processId); }
+        }
+
+        public abstract void ShutDown();
+
+        public abstract string ToCommandLine();
+
+        public bool WaitForExit()
+        {
+            if (IsRunning)
+            {
+                try
+                {
+                    var parentProcess = Process.GetProcessById(_processId);
+                    if (!parentProcess.WaitForExit((int) TimeSpan.FromSeconds(50).TotalMilliseconds))
+                        return false;
+                }
+                catch (ArgumentException)
+                {
+                    // process already has stopped
+                }
+            }
+
+            return true;
+        }
+
+        public abstract void Start();
     }
 }

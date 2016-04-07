@@ -16,7 +16,7 @@ namespace GainCapital.AutoUpdate.DebugProject
 	    private Process _updateProcess;
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool GenerateConsoleCtrlEvent(UpdateChecker.ConsoleCtrlEvent sigevent, int dwProcessGroupId);
+        static extern bool GenerateConsoleCtrlEvent(ConsoleCtrlEvent sigevent, int dwProcessGroupId);
         public enum ConsoleCtrlEvent
         {
             CTRL_C = 0,
@@ -65,7 +65,7 @@ namespace GainCapital.AutoUpdate.DebugProject
 		        if (!_updateProcess.WaitForExit(1))
 		        {
                     Console.WriteLine("Sending CTRL+C to updater...");
-		            GenerateConsoleCtrlEvent(UpdateChecker.ConsoleCtrlEvent.CTRL_C, 0);
+		            GenerateConsoleCtrlEvent(ConsoleCtrlEvent.CTRL_C, 0);
 		            if (!_updateProcess.WaitForExit(5000))
 		            {
 		                Console.WriteLine("Not shut down, killing...");

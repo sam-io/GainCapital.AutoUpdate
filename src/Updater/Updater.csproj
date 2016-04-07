@@ -56,15 +56,18 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppMode.cs" />
-    <Compile Include="FileUtil.cs" />
+    <Compile Include="ConsoleProcess.cs" />
+    <Compile Include="FileSystem.cs" />
     <Compile Include="JunctionPoint.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="ParentProcess.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceProcess.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="UpdateChecker.cs" />
-    <Compile Include="UpdatingInfo.cs" />
+    <Compile Include="UpdatePackages.cs" />
+    <Compile Include="VersionedDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
