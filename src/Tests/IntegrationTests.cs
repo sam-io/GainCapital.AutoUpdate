@@ -269,7 +269,7 @@ namespace GainCapital.AutoUpdate.Tests
 					return;
 			}
 
-			throw new ApplicationException();
+			throw new ApplicationException("Update hasn't finished within the specified time frame");
 		}
 
 		static List<Process> FindProcesses(string appName, string workingPath)
