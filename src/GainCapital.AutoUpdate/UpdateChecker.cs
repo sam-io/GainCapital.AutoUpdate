@@ -176,6 +176,7 @@ namespace GainCapital.AutoUpdate
 				WorkingDirectory = GetMainLogFolder() ?? _updateDataPath,
 				FileName = updaterPath,
 				Arguments = args,
+				UseShellExecute = false,
 			});
 			_host.Stop();
 		}
