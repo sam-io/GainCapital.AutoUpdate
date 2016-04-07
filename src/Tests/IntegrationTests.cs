@@ -216,7 +216,8 @@ namespace GainCapital.AutoUpdate.Tests
 		{
 			var versionText = FileVersionInfo.GetVersionInfo(testExePath).FileVersion;
 			var version = new Version(versionText);
-			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
+			var newVersion = new Version(version.Major, version.Minor, version.Build, version.Revision + 1);
+
 			var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
 			var buildArgs = string.Format("{0} /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\" /p:OutputPath=\"{2}\"",
 				buildFilePath, newVersion, _testBinPath);
