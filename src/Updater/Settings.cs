@@ -7,7 +7,13 @@ namespace GainCapital.AutoUpdate.Updater
 	{
 		public static string NugetServerUrl
 		{
-			get { return Get("NugetServerUrl", "InternalNugetServerUrl"); }
+		    get
+		    {
+                var result = Get("NugetServerUrl");
+		        if (string.IsNullOrEmpty(result))
+		            result = "http://internal.nuget.cityindex.co.uk/api/v2";
+		        return result;
+		    }
 		}
 
 		public static TimeSpan UpdateCheckingPeriod
@@ -26,31 +32,30 @@ namespace GainCapital.AutoUpdate.Updater
 		{
 			get
 			{
-				var resText = Get("UpdatePackageLevel");
-				if (string.IsNullOrEmpty(resText))
-				{
-					resText = Get("IsPreProductionEnvironment");
-					if (string.IsNullOrEmpty(resText))
-						return PackageLevel.Release;
-					var res = bool.Parse(resText.ToLowerInvariant());
-					return res ? PackageLevel.RC : PackageLevel.Release;
+				var result = Get("UpdatePackageLevel");
+                if (string.IsNullOrEmpty(result))
+                {
+                    var environmentType = Get("EnvironmentName");
+                    if (environmentType.Equals("QAT"))
+                        return PackageLevel.Beta;
+                    if(environmentType.Equals("PPE"))
+                        return PackageLevel.RC;
+                    
+                    return PackageLevel.Release;
 				}
 				else
-				{
-					var res = (PackageLevel)Enum.Parse(typeof(PackageLevel), resText, true);
-					return res;
+				{					
+					return (PackageLevel)Enum.Parse(typeof(PackageLevel), result, true);;
 				}
 			}
 		}
 
-		static string Get(string name, string alternativeName = null)
+		static string Get(string name)
 		{
 			var res = ConfigurationManager.AppSettings[name];
 			if (string.IsNullOrEmpty(res))
 				res = Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Machine);
 
-			if (string.IsNullOrEmpty(res) && !string.IsNullOrEmpty(alternativeName))
-				res = Get(alternativeName);
 
 			return res;
 		}
