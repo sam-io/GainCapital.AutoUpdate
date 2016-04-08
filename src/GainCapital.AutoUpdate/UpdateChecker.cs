@@ -41,6 +41,8 @@ namespace GainCapital.AutoUpdate
 			var curAssemblyPath = Assembly.GetEntryAssembly().Location;
 			_appPath = Path.GetDirectoryName(curAssemblyPath);
 
+			LogAppPath();
+
 			if (!JunctionPoint.Exists(_appPath))
 			{
 				LogError(string.Format("Invalid app folder structure: \"{0}\". Turned off auto updates.", _appPath));
@@ -59,6 +61,29 @@ namespace GainCapital.AutoUpdate
 				_thread.Start();
 			}
 		}
+
+		void LogAppPath()
+		{
+			try
+			{
+				var resolvedPath = NativeMethods.ResolvePath(_appPath);
+				if (resolvedPath.StartsWith(LongPathPrefix))
+					resolvedPath = resolvedPath.Substring(LongPathPrefix.Length);
+
+				Log.Info(new
+				{
+					Category = Const.LogCategory.InternalDiagnostic,
+					AppPath = _appPath,
+					ResolvedAppPath = resolvedPath,
+				});
+			}
+			catch (Exception exc)
+			{
+				LogError(exc.ToString());
+			}
+		}
+
+		private const string LongPathPrefix = @"\\?\";
 
 		public void Stop()
 		{
