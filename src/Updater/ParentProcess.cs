@@ -94,7 +94,7 @@ namespace GainCapital.AutoUpdate.Updater
                 var serviceName = GetService(processId);
 
                 if(!string.IsNullOrEmpty(serviceName))
-                    return new ServiceProcess(processId, serviceName, Process.GetProcessById(processId).MainModule.FileName);
+                    return new ServiceProcess(processId, Process.GetProcessById(processId).MainModule.FileName, serviceName);
 
                 return new ConsoleProcess(processId, Process.GetProcessById(processId).MainModule.FileName);
             }
