@@ -61,7 +61,7 @@ namespace GainCapital.AutoUpdate.Updater
                 .IncludeFilesRecursive("*.xml")
                 .Flatten(updateDeploymentPath);
 
-            var environmentType = Environment.GetEnvironmentVariable("EnvironmentName");
+            var environmentType = Environment.GetEnvironmentVariable("EnvironmentName", EnvironmentVariableTarget.Machine);
             if (string.IsNullOrEmpty(environmentType))
                 environmentType = "local";
 
