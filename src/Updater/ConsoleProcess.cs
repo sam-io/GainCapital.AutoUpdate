@@ -33,7 +33,7 @@ namespace GainCapital.AutoUpdate.Updater
         public override void ShutDown()
         {
             Logger.LogInfo("Process is console app, sending CTRL+C");
-            GenerateConsoleCtrlEvent(ConsoleCtrlEvent.CTRL_C, 0);
+            GenerateConsoleCtrlEvent(ConsoleCtrlEvent.CTRL_C, 0);                            
         }
 
         public override string ToCommandLine()

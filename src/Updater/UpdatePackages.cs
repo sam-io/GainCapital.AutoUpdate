@@ -51,6 +51,9 @@ namespace GainCapital.AutoUpdate.Updater
             var updateDeploymentPath = Path.Combine(installPath, "v" + package.Version.Version);
             var packageBinPath = Path.Combine(packagePath, "lib");
 
+            if (Directory.Exists(updateDeploymentPath))
+                Directory.Delete(updateDeploymentPath, true);
+
             FileSystem.FromDirectory(packageBinPath)
                 .IncludeFilesRecursive("*.exe")
                 .IncludeFilesRecursive("*.dll")
@@ -62,7 +65,8 @@ namespace GainCapital.AutoUpdate.Updater
             if (string.IsNullOrEmpty(environmentType))
                 environmentType = "local";
 
-            var configPath = Path.Combine(packagePath, @"content\net45\Config", environmentType, "Apps", package.Title);
+            var configPath = Path.Combine(packagePath, @"content\net45\Config", environmentType, "Apps", package.Title, "PKH-QAT-APP01");
+            Logger.LogInfo(string.Format("Copying config from {0}", configPath));
             FileSystem.FromDirectory(configPath)
                 .IncludeFiles("*.config")
                 .Flatten(updateDeploymentPath);
