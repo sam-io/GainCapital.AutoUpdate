@@ -59,8 +59,16 @@ namespace GainCapital.AutoUpdate.Updater
             while (!_canelToken.WaitHandle.WaitOne(Settings.UpdateCheckingPeriod))
 			{
 				try
-				{                    
-					CheckUpdatesOnce();
+				{
+				    if (!_parentProcess.IsRunning)
+				    {
+				        Logger.LogInfo("Parent process is no longer running, will shut down.");
+				        OnShutdown(EventArgs.Empty);
+				    }
+				    else
+				    {
+				        CheckUpdatesOnce();
+				    }
 				}
 				catch (ThreadInterruptedException)
 				{

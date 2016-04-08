@@ -65,7 +65,7 @@ namespace GainCapital.AutoUpdate.Updater
             if (string.IsNullOrEmpty(environmentType))
                 environmentType = "local";
 
-            var configPath = Path.Combine(packagePath, @"content\net45\Config", environmentType, "Apps", package.Title, "PKH-QAT-APP01");
+            var configPath = Path.Combine(packagePath, @"content\net45\Config", environmentType, "Apps", package.Title, Environment.MachineName);
             Logger.LogInfo(string.Format("Copying config from {0}", configPath));
             FileSystem.FromDirectory(configPath)
                 .IncludeFiles("*.config")
