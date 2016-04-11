@@ -40,7 +40,8 @@ namespace GainCapital.AutoUpdate.Updater
             if (!JunctionPoint.Exists(_appPath))
 			{
 				Logger.LogError(string.Format("Invalid app folder structure: \"{0}\". Turned off auto updates.", _appPath));
-				return;
+                OnShutdown(EventArgs.Empty);
+			    return;
 			}
 
 		    _appParentPath = Path.GetDirectoryName(_appPath);
