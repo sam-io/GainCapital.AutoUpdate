@@ -128,6 +128,8 @@ namespace GainCapital.AutoUpdate.Updater
                     CreateNoWindow = true,
                     WindowStyle = ProcessWindowStyle.Hidden
                 });
+
+            File.WriteAllText(Path.Combine(updateDeploymentPath, "RollbackInfo.txt"), _parentProcess.Version.ToString());
             
             Logger.LogInfo("Shutting down parent process");
 		    _parentProcess.ShutDown();

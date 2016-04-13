@@ -48,7 +48,7 @@ namespace GainCapital.AutoUpdate.Updater
             packageManager.InstallPackage(package.Id, package.Version, true, false);
 
             var packagePath = Path.Combine(updateDataPath, package.Id + "." + package.Version);
-            var updateDeploymentPath = Path.Combine(installPath, "v" + package.Version.Version);
+            var updateDeploymentPath = Path.Combine(installPath, package.Version.Version.ToString());
             var packageBinPath = Path.Combine(packagePath, "lib");
 
             if (Directory.Exists(updateDeploymentPath))
