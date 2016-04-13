@@ -35,13 +35,15 @@ namespace GainCapital.AutoUpdate.Updater
 				var result = Get("UpdatePackageLevel");
                 if (string.IsNullOrEmpty(result))
                 {
-                    var environmentType = Get("EnvironmentName");
-                    if (environmentType.Equals("QAT"))
-                        return PackageLevel.Beta;
-                    if(environmentType.Equals("PPE"))
-                        return PackageLevel.RC;
-                    
-                    return PackageLevel.Release;
+                    var environmentType = Get("EnvironmentType");
+                    if (!string.IsNullOrEmpty(environmentType))
+                    {
+                        if (environmentType.Equals("LIVE"))
+                            return PackageLevel.Release;
+                        if (environmentType.Equals("PPE"))
+                            return PackageLevel.RC;
+                    }
+                    return PackageLevel.Beta;
 				}
 				else
 				{					
