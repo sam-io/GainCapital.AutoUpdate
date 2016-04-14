@@ -33,12 +33,13 @@ namespace GainCapital.AutoUpdate.Updater
                     Logger.LogInfo("Updating: " + Environment.CommandLine);
 
 			        var sourcePath = args[0];
-			        var parentProcess = ParentProcess.FromCommandLine(args, 1);
+			        var changeRequestNumber = args[1];
+                    var parentProcess = ParentProcess.FromCommandLine(args, 2);
 			        if (!parentProcess.WaitForExit())
 			            throw new ApplicationException("Parent process didn't stop");
                     
 			        VersionedDirectory.SetCurrent(sourcePath, parentProcess.Location);
-                    EdbUpdate.UpdateEdb(parentProcess.Name, parentProcess.Location);
+                    EdbUpdate.UpdateEdb(parentProcess.Name, changeRequestNumber);
 
                     parentProcess.Start();
                     Logger.LogInfo(parentProcess.ProcessId + " - finished successfully");

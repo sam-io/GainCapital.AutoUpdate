@@ -113,12 +113,13 @@ namespace GainCapital.AutoUpdate.Updater
        
 		private void InstallUpdate(IPackage package)
 		{
-	        var updateDeploymentPath = _updatePackages.Download(package, _appParentPath);
-            
-            Logger.LogInfo(string.Format("Updating from {0}.", updateDeploymentPath));
+	        var updatePackage = _updatePackages.Download(package, _appParentPath);
 
-            var args = string.Format("\"{0}\" {1}", 
-                            updateDeploymentPath,
+            Logger.LogInfo(string.Format("Updating from {0}.", updatePackage.UpdateLocation));
+
+            var args = string.Format("\"{0}\" \"{1}\" {2}",
+                            updatePackage.UpdateLocation,
+                            updatePackage.ChangeRequestNumber,
                             _parentProcess.ToCommandLine());
 
             Process.Start(new ProcessStartInfo
@@ -129,7 +130,7 @@ namespace GainCapital.AutoUpdate.Updater
                     WindowStyle = ProcessWindowStyle.Hidden
                 });
 
-            File.WriteAllText(Path.Combine(updateDeploymentPath, "RollbackInfo.txt"), _parentProcess.Version.ToString());
+            File.WriteAllText(Path.Combine(updatePackage.UpdateLocation, "RollbackInfo.txt"), _parentProcess.Version.ToString());
             
             Logger.LogInfo("Shutting down parent process");
 		    _parentProcess.ShutDown();

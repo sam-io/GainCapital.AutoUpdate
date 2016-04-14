@@ -18,16 +18,14 @@ namespace GainCapital.AutoUpdate.Updater
             {"LIVE", "http://edbwebapi.cityindex.co.uk:8081/api/UpdateDeployedInfo"}
         };
 
-        public static async void UpdateEdb(string componentName, string path)
+        public static async void UpdateEdb(string componentName, string changeRequestNumber)
         {
             try
             {
                 var environmentType = DeploymentEnvironment.EnvironmentType;
-                var changeRequestFile = Path.Combine(path, "CRNumber.txt");
-                if (!string.IsNullOrEmpty(environmentType) && EdbEndpoints.ContainsKey(environmentType.ToUpper()) && File.Exists(changeRequestFile))
+                if (!string.IsNullOrEmpty(environmentType) && EdbEndpoints.ContainsKey(environmentType.ToUpper()) && !string.IsNullOrEmpty(changeRequestNumber))
                 {
-                    var client = new HttpClient();
-                    var changeRequestNumber = File.ReadAllText(changeRequestFile).Trim();
+                    var client = new HttpClient();                    
                     var request = string.Format(
                             "{{ 'ComponentType': 'WindowsServices', " +
                             "  'ComponentName': '{0}', " +

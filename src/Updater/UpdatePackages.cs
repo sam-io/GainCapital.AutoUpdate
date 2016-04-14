@@ -6,6 +6,18 @@ using NuGet;
 
 namespace GainCapital.AutoUpdate.Updater
 {
+    public class UpdatePackage
+    {
+        public UpdatePackage(string updateLocation, string changeRequestNumber)
+        {
+            UpdateLocation = updateLocation;
+            ChangeRequestNumber = changeRequestNumber;
+        }
+
+        public string UpdateLocation { get; private set; }
+        public string ChangeRequestNumber { get; private set; }
+    }
+
     public class UpdatePackages
     {
         private readonly IPackageRepository _packageRepository;
@@ -40,7 +52,7 @@ namespace GainCapital.AutoUpdate.Updater
             return res;
         }
 
-        public string Download(IPackage package, string installPath)
+        public UpdatePackage Download(IPackage package, string installPath)
         {
             var updateDataPath = Path.Combine(installPath, "UpdateData");
 
@@ -71,7 +83,12 @@ namespace GainCapital.AutoUpdate.Updater
                 .IncludeFiles("*.config")
                 .Flatten(updateDeploymentPath);
 
-            return updateDeploymentPath;
+            var changeRequestNumberPath = Path.Combine(packagePath, @"content\net45\CRNumber.txt");
+            var changeRequestNumber = string.Empty;
+            if (File.Exists(changeRequestNumberPath))            
+                changeRequestNumber = File.ReadAllText(changeRequestNumberPath);
+            
+            return new UpdatePackage(updateDeploymentPath, changeRequestNumber);
         }
 
     }
