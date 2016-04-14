@@ -86,7 +86,7 @@ namespace GainCapital.AutoUpdate.Updater
             var changeRequestNumberPath = Path.Combine(packagePath, @"content\net45\CRNumber.txt");
             var changeRequestNumber = string.Empty;
             if (File.Exists(changeRequestNumberPath))            
-                changeRequestNumber = File.ReadAllText(changeRequestNumberPath);
+                changeRequestNumber = File.ReadAllText(changeRequestNumberPath).Trim();
             
             return new UpdatePackage(updateDeploymentPath, changeRequestNumber);
         }
