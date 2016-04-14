@@ -35,7 +35,7 @@ namespace GainCapital.AutoUpdate.Updater
 				var result = Get("UpdatePackageLevel");
                 if (string.IsNullOrEmpty(result))
                 {
-                    var environmentType = Get("EnvironmentType");
+                    var environmentType = DeploymentEnvironment.EnvironmentType;
                     if (!string.IsNullOrEmpty(environmentType))
                     {
                         if (environmentType.Equals("LIVE"))
@@ -57,8 +57,7 @@ namespace GainCapital.AutoUpdate.Updater
 			var res = ConfigurationManager.AppSettings[name];
 			if (string.IsNullOrEmpty(res))
 				res = Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Machine);
-
-
+            
 			return res;
 		}
 	}

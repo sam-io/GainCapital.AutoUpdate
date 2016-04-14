@@ -102,7 +102,7 @@ namespace GainCapital.AutoUpdate.Updater
             if (string.IsNullOrEmpty(Settings.NugetServerUrl))
 				return;
              
-			var lastPackage = _updatePackages.GetLastPackage(Path.GetFileNameWithoutExtension(_parentProcess.FileName), Settings.UpdatePackageLevel);
+			var lastPackage = _updatePackages.GetLastPackage(_parentProcess.Name, Settings.UpdatePackageLevel);
 		    if (lastPackage.Version.Version > _parentProcess.Version)
 		    {
                 Logger.LogInfo(string.Format("New version {0} found, current version is {1}, installing...", lastPackage.Version.Version, _parentProcess.Version));

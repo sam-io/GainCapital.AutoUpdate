@@ -38,6 +38,7 @@ namespace GainCapital.AutoUpdate.Updater
 			            throw new ApplicationException("Parent process didn't stop");
                     
 			        VersionedDirectory.SetCurrent(sourcePath, parentProcess.Location);
+                    EdbUpdate.UpdateEdb(parentProcess.Name, parentProcess.Location);
 
                     parentProcess.Start();
                     Logger.LogInfo(parentProcess.ProcessId + " - finished successfully");

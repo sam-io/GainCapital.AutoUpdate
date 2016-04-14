@@ -50,11 +50,14 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleProcess.cs" />
+    <Compile Include="DeploymentEnvironment.cs" />
+    <Compile Include="EDBUpdate.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="JunctionPoint.cs" />
     <Compile Include="Logger.cs" />

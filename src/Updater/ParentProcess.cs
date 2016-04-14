@@ -116,6 +116,8 @@ namespace GainCapital.AutoUpdate.Updater
             get { return Process.GetProcesses().Any(p => p.Id == _processId); }
         }
 
+        public string Name { get { return Path.GetFileNameWithoutExtension(_fullName); }}
+
         public abstract void ShutDown();
 
         public abstract string ToCommandLine();

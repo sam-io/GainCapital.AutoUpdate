@@ -61,11 +61,11 @@ namespace GainCapital.AutoUpdate.Updater
                 .IncludeFilesRecursive("*.xml")
                 .Flatten(updateDeploymentPath);
 
-            var environmentType = Environment.GetEnvironmentVariable("EnvironmentName", EnvironmentVariableTarget.Machine);
-            if (string.IsNullOrEmpty(environmentType))
-                environmentType = "local";
+            var environmentName = DeploymentEnvironment.EnvironmentName;
+            if (string.IsNullOrEmpty(environmentName))
+                environmentName = "local";
 
-            var configPath = Path.Combine(packagePath, @"content\net45\Config", environmentType, "Apps", package.Title, Environment.MachineName);
+            var configPath = Path.Combine(packagePath, @"content\net45\Config", environmentName, "Apps", package.Title, Environment.MachineName);
             Logger.LogInfo(string.Format("Copying config from {0}", configPath));
             FileSystem.FromDirectory(configPath)
                 .IncludeFiles("*.config")
