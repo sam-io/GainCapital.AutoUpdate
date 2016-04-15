@@ -68,7 +68,17 @@ namespace GainCapital.AutoUpdate.Updater
 				    }
 				    else
 				    {
-				        CheckUpdatesOnce();
+                        if(string.IsNullOrEmpty(DeploymentEnvironment.EnvironmentName))
+                            Logger.LogError("EnvironmentName is undefined, auto update will be skipped.");
+
+                        if (string.IsNullOrEmpty(DeploymentEnvironment.EnvironmentType))
+                            Logger.LogError("EnvironmentType is undefined, auto update will be skipped.");
+
+                        if(!string.IsNullOrEmpty(DeploymentEnvironment.EnvironmentName) &&
+                           !string.IsNullOrEmpty(DeploymentEnvironment.EnvironmentType))
+				        {
+				            CheckUpdatesOnce();    
+				        }
 				    }
 				}
 				catch (ThreadInterruptedException)
