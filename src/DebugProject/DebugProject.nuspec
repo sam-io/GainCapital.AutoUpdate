@@ -16,6 +16,6 @@
     <file src="..\..\bin\DebugApp\NuGet.Core.dll" target="lib\net45\"/>
     <file src="..\..\bin\DebugApp\Topshelf.dll" target="lib\net45\"/>
     <file src="..\..\bin\DebugApp\Topshelf.Log4Net.dll" target="lib\net45\"/>
-    <file src="..\..\bin\DebugApp\GainCapital.AutoUpdate.DebugProject.exe.config" target="content\net45\Config\"/>
+    <file src="..\..\bin\DebugApp\GainCapital.AutoUpdate.DebugProject.exe.config" target="content\net45\Config\DEV\Apps\GainCapital.AutoUpdate.DebugProject\$COMPUTERNAME$\"/>
   </files>
 </package>

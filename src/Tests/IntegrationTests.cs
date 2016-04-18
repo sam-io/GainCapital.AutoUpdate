@@ -35,7 +35,7 @@ namespace GainCapital.AutoUpdate.Tests
 			Directory.CreateDirectory(_stagingPath);
 
 			InitTestApp();
-
+            SetupEnvironment();
 			StartNugetServer();
 		}
 
@@ -111,20 +111,17 @@ namespace GainCapital.AutoUpdate.Tests
 		}
 
 		[Test]
-		public static void TestUpdatingOnce()
+		public static void TestUpdatingConsole()
 		{
 			var testExePath = Path.Combine(_currentAppPath, TestAppExeName);
-
 			var newVersion = BuildAndPublishUpdate(testExePath);
-
-            Environment.SetEnvironmentVariable("NugetServerUrl", Settings.NugetUrl, EnvironmentVariableTarget.Machine);
-            Environment.SetEnvironmentVariable("UpdatePackageLevel", "Beta", EnvironmentVariableTarget.Machine);
-            Environment.SetEnvironmentVariable("UpdateCheckingPeriod", "0:0:1", EnvironmentVariableTarget.Machine);
-
 			var testProcess = ProcessUtil.Execute(testExePath);
-            
-			WaitUpdateFinished();
 
+            var newProcess = WaitUpdateFinished(newVersion);
+            newProcess.CloseMainWindow();
+            if (!newProcess.WaitForExit(5 * 1000))
+                throw new ApplicationException();
+            
 			var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));
 			var successMessage = string.Format("{0} - finished successfully", testProcess.Id);
 			Assert.That(updaterLog.Contains(successMessage));
@@ -133,13 +130,48 @@ namespace GainCapital.AutoUpdate.Tests
 			Assert.That(updatedVersion,Is.EqualTo(newVersion));
 		}
 
+
+        [Test]
+        public static void TestUpdatingService()
+        {
+            var testExePath = Path.Combine(_currentAppPath, TestAppExeName);
+            var newVersion = BuildAndPublishUpdate(testExePath);
+            ProcessUtil.Execute(testExePath, "install --manual");
+            try
+            {
+                ProcessUtil.Execute(testExePath, "start");
+
+                WaitUpdateFinished(newVersion);
+                ProcessUtil.Execute(testExePath, "stop");
+
+                var updaterLog = File.ReadAllText(Path.Combine(_stagingPath, @"UpdateData\GainCapital.AutoUpdate.log"));            
+                Assert.That(updaterLog.Contains("finished successfully"));
+
+                var updatedVersion = new Version(FileVersionInfo.GetVersionInfo(testExePath).FileVersion);
+                Assert.That(updatedVersion, Is.EqualTo(newVersion));
+            }
+            finally
+            {
+                ProcessUtil.Execute(testExePath, "uninstall");
+            }
+        }
+
+	    private static void SetupEnvironment()
+	    {
+            Environment.SetEnvironmentVariable("EnvironmentName", "DEV", EnvironmentVariableTarget.Machine);
+            Environment.SetEnvironmentVariable("EnvironmentType", "DEV", EnvironmentVariableTarget.Machine);
+            Environment.SetEnvironmentVariable("NugetServerUrl", Settings.NugetUrl, EnvironmentVariableTarget.Machine);
+            Environment.SetEnvironmentVariable("UpdatePackageLevel", "Beta", EnvironmentVariableTarget.Machine);
+            Environment.SetEnvironmentVariable("UpdateCheckingPeriod", "0:0:1", EnvironmentVariableTarget.Machine);
+	    }
+
 		static Version BuildAndPublishUpdate(string testExePath)
 		{
 			var versionText = FileVersionInfo.GetVersionInfo(testExePath).FileVersion;
 			var version = new Version(versionText);
 			var newVersion = new Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision + 1);
             var buildFilePath = Path.GetFullPath(Path.Combine(_binPath, @"..\build.xml"));
-            var buildArgs = string.Format("{0} /t:Build /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-rc\"", buildFilePath,
+            var buildArgs = string.Format("{0} /t:Build /t:Package /p:BUILD_VERSION={1} /p:VERSION_SUFFIX=\"-beta\"", buildFilePath,
 				newVersion);
 
             var versionFile = Path.GetFullPath(Path.Combine(_binPath, @"..\src\DebugProject\Properties\AssemblyVersion.cs"));
@@ -168,23 +200,19 @@ namespace GainCapital.AutoUpdate.Tests
 			return newVersion;
 		}
 
-		static void WaitUpdateFinished()
+		private static Process WaitUpdateFinished(Version newVersion)
 		{
-			for (int i = 0; i < 10; i++)
+			for (var i = 0; i < 10; i++)
 			{
 				var testProcesses = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(TestAppExeName));
-				var newTestApps = testProcesses.Where(process => process.GetCommandLine().StartsWith(_currentAppPath)).ToList();
+                var newTestApps = testProcesses.Where(p => new Version(p.MainModule.FileVersionInfo.FileVersion) == newVersion).ToArray();
 
-				if (newTestApps.Count > 1)
+				if (newTestApps.Length > 1)
 					throw new ApplicationException();
 
-				if (newTestApps.Count == 1)
+                if (newTestApps.Length == 1)
 				{
-					var newTestApp = newTestApps.First();
-				    newTestApp.CloseMainWindow();
-					if (!newTestApp.WaitForExit(5 * 1000))
-						throw new ApplicationException();
-					return;
+					return newTestApps.First();				    
 				}
 
 				Thread.Sleep(TimeSpan.FromSeconds(5));
