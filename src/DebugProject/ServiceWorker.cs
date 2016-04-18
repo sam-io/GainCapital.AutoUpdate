@@ -32,14 +32,8 @@ namespace GainCapital.AutoUpdate.DebugProject
 		    {
 
 		        _host = hostControl;
-		        var processInfo = new ProcessStartInfo("GainCapital.Updater.exe") { UseShellExecute = false };
-		        /*var variables = Environment.GetEnvironmentVariables();
-		        foreach (var key in variables.Keys.Cast<string>().Where(k => !processInfo.EnvironmentVariables.ContainsKey(k)))
-		        {
-		            processInfo.EnvironmentVariables.Add(key, (string) variables[key]);
-                    Console.WriteLine("Adding env {0}", key);
-		        }*/
-                Console.WriteLine("Starting {0}", processInfo.FileName);
+		        var processInfo = new ProcessStartInfo("Updater.exe") { UseShellExecute = false };
+		        Console.WriteLine("Starting {0}", processInfo.FileName);
                 _updateProcess = Process.Start(processInfo);
 
 		    }
@@ -47,14 +41,7 @@ namespace GainCapital.AutoUpdate.DebugProject
 		    {
 		        Console.WriteLine(ex);
 		    }
-		    /*_updater = new UpdateChecker(_host,
-				new UpdatingInfo
-				{
-					NugetAppName = Program.AppName,
-					ServiceName = Program.AppName,
-				});
-			_updater.Start();*/
-
+		    
 			return true;
 		}
 
